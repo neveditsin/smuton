@@ -1,0 +1,14 @@
+{% extends "core/judge_response_base.html" %}
+
+{% block title %}
+    {{ judge_response }}
+{% endblock %}
+
+{% block content %}
+    <h1><a href={% url "core:judge_response_list" %}>JudgeResponse</a></h1>
+    <h2>{{ judge_response }} | <a href={% url "core:judge_response_update" judge_response.pk %}>Update</a> | 
+    <form style="display:inline;" action={% url "core:judge_response_delete" judge_response.pk %} method="post" onsubmit="return confirm('Are you sure you want to delete {{ judge_response }}?')">{% csrf_token %}
+    <input type="submit" value="Delete" />
+    </form>
+    </h2>
+{% endblock %}

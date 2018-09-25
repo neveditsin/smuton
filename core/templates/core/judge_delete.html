@@ -1,0 +1,17 @@
+{% extends "core/judge_base.html" %}
+
+{% block title %}
+    Delete {{ judge }}
+{% endblock %}
+
+{% block content %}
+<h1>Delete {{ judge }}</h1>
+
+<form action="" method="post">{% csrf_token %}
+    <p>Are you sure you want to delete {{ judge }}?</p>
+    <input type="submit" value="Confirm" />
+</form>
+
+<a href={% url "core:judge_detail" judge.pk %}>Cancel</a>
+
+{% endblock %}

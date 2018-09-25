@@ -1,0 +1,14 @@
+{% extends "core/criteria_base.html" %}
+
+{% block title %}
+    {{ criteria }}
+{% endblock %}
+
+{% block content %}
+    <h1><a href={% url "core:criteria_list" %}>Criteria</a></h1>
+    <h2>{{ criteria }} | <a href={% url "core:criteria_update" criteria.pk %}>Update</a> | 
+    <form style="display:inline;" action={% url "core:criteria_delete" criteria.pk %} method="post" onsubmit="return confirm('Are you sure you want to delete {{ criteria }}?')">{% csrf_token %}
+    <input type="submit" value="Delete" />
+    </form>
+    </h2>
+{% endblock %}

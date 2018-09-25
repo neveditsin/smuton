@@ -1,0 +1,14 @@
+{% extends "core/team_base.html" %}
+
+{% block title %}
+    {{ team }}
+{% endblock %}
+
+{% block content %}
+    <h1><a href={% url "core:team_list" %}>Team</a></h1>
+    <h2>{{ team }} | <a href={% url "core:team_update" team.pk %}>Update</a> | 
+    <form style="display:inline;" action={% url "core:team_delete" team.pk %} method="post" onsubmit="return confirm('Are you sure you want to delete {{ team }}?')">{% csrf_token %}
+    <input type="submit" value="Delete" />
+    </form>
+    </h2>
+{% endblock %}

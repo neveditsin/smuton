@@ -1,0 +1,16 @@
+{% extends "core/hackathon_base.html" %}
+
+{% block title %}
+    Create Hackathon
+{% endblock %}
+
+{% block content %}
+<h1><a href={% url "core:hackathon_list" %}>Hackathon</a></h1>
+<h2>Create Hackathon</h2>
+
+<form action="" method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Create" />
+</form>
+<a href={% url "core:hackathon_list" %}>Cancel</a>
+{% endblock %}
