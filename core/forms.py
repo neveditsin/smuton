@@ -6,7 +6,7 @@ class JudgeForm(forms.ModelForm):
 
     class Meta:
         model = Judge
-        fields = ['first_name', 'last_name', 'email']
+        fields = ['name', 'email', 'role']
         exclude = []
         widgets = None
         localized_fields = None
@@ -23,16 +23,16 @@ class JudgeForm(forms.ModelForm):
     def full_clean(self):
         return super(JudgeForm, self).full_clean()
 
-    def clean_first_name(self):
-        first_name = self.cleaned_data.get("first_name", None)
+    def clean_name(self):
+        first_name = self.cleaned_data.get("name", None)
         return first_name
-
-    def clean_last_name(self):
-        last_name = self.cleaned_data.get("last_name", None)
-        return last_name
 
     def clean_email(self):
         email = self.cleaned_data.get("email", None)
+        return email
+    
+    def clean_role(self):
+        email = self.cleaned_data.get("role", None)
         return email
 
     def clean(self):

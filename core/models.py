@@ -1,15 +1,20 @@
 from django.db import models
 
+class JudgeRole(models.Model):
+    name = models.CharField(max_length=64, verbose_name="Role Name")
+    def __str__(self):
+        return self.name
+    
 class Judge(models.Model):
-    first_name = models.CharField(max_length=128, verbose_name="First Name")
-    last_name = models.CharField(max_length=128, verbose_name="Last Name")
+    name = models.CharField(max_length=128, verbose_name="Name")
+    role = models.ForeignKey(JudgeRole, on_delete=models.CASCADE, default=1)
     email = models.EmailField(blank=True)
     def __str__(self):
-        return self.first_name + ' ' + self.last_name
+        return self.name
 
 class Team(models.Model):
     name = models.CharField(max_length=128, verbose_name="Team Name")
-    participants = models.CharField(max_length=512, verbose_name="Participants: comma-separated")
+    participants = models.CharField(max_length=512, verbose_name="Participants: comma-separated", blank=True)
     def __str__(self):
         return self.name
 
@@ -38,8 +43,6 @@ class Criteria(models.Model):
 class Hackathon(models.Model):
     name = models.CharField(max_length=128, verbose_name="Name")
     desc = models.CharField(max_length=128, verbose_name="Description", blank=True)
-    teams = models.ManyToManyField(Team)
-    judges = models.ManyToManyField(Judge)
     def __str__(self):
         return self.name
     
@@ -59,10 +62,7 @@ class JudgingRound(models.Model):
         default=1,
         verbose_name="Round")
     criteria = models.ManyToManyField(Criteria)
-    
-    #should be subset of Hackathon.teams
     teams = models.ManyToManyField(Team)
-    #should be subset of Hackathon.judges
     judges = models.ManyToManyField(Judge)
     def __str__(self):
         return "round " + str(self.number)
