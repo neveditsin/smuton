@@ -1,5 +1,11 @@
 from django.db import models
 
+class Hackathon(models.Model):
+    name = models.CharField(max_length=128, verbose_name="Name")
+    desc = models.CharField(max_length=128, verbose_name="Description", blank=True)
+    def __str__(self):
+        return self.name
+    
 class JudgeRole(models.Model):
     name = models.CharField(max_length=64, verbose_name="Role Name")
     def __str__(self):
@@ -9,12 +15,14 @@ class Judge(models.Model):
     name = models.CharField(max_length=128, verbose_name="Name")
     role = models.ForeignKey(JudgeRole, on_delete=models.CASCADE, default=1)
     email = models.EmailField(blank=True)
+    hackathon = models.ForeignKey(Hackathon, on_delete=models.CASCADE)
     def __str__(self):
         return self.name
 
 class Team(models.Model):
     name = models.CharField(max_length=128, verbose_name="Team Name")
     participants = models.CharField(max_length=512, verbose_name="Participants: comma-separated", blank=True)
+    hackathon = models.ForeignKey(Hackathon, on_delete=models.CASCADE)
     def __str__(self):
         return self.name
 
@@ -40,11 +48,6 @@ class Criteria(models.Model):
         return self.name
     
     
-class Hackathon(models.Model):
-    name = models.CharField(max_length=128, verbose_name="Name")
-    desc = models.CharField(max_length=128, verbose_name="Description", blank=True)
-    def __str__(self):
-        return self.name
     
         
 class JudgingRound(models.Model):
@@ -62,8 +65,7 @@ class JudgingRound(models.Model):
         default=1,
         verbose_name="Round")
     criteria = models.ManyToManyField(Criteria)
-    teams = models.ManyToManyField(Team)
-    judges = models.ManyToManyField(Judge)
+
     def __str__(self):
         return "round " + str(self.number)
     

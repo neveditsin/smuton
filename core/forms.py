@@ -6,7 +6,7 @@ class JudgeForm(forms.ModelForm):
 
     class Meta:
         model = Judge
-        fields = ['name', 'email', 'role']
+        fields = ['name', 'email', 'role', 'hackathon']
         exclude = []
         widgets = None
         localized_fields = None
@@ -49,7 +49,7 @@ class TeamForm(forms.ModelForm):
 
     class Meta:
         model = Team
-        fields = ['name', 'participants']
+        fields = ['name', 'participants', 'hackathon']
         exclude = []
         widgets = None
         localized_fields = None
@@ -72,6 +72,10 @@ class TeamForm(forms.ModelForm):
 
     def clean_participants(self):
         participants = self.cleaned_data.get("participants", None)
+        return participants
+
+    def clean_hackathon(self):
+        participants = self.cleaned_data.get("hackathon", None)
         return participants
 
     def clean(self):
