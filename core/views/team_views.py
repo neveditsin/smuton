@@ -16,7 +16,8 @@ class TeamListView(ListView):
     allow_empty = True
     page_kwarg = 'page'
     paginate_orphans = 0
-
+    hid = 0
+    
     def __init__(self, **kwargs):
         return super(TeamListView, self).__init__(**kwargs)
 
@@ -24,10 +25,16 @@ class TeamListView(ListView):
         return super(TeamListView, self).dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
+        self.hid = request.GET.get('hack_id', '0')
         return super(TeamListView, self).get(request, *args, **kwargs)
 
     def get_queryset(self):
-        return super(TeamListView, self).get_queryset()
+        if int(self.hid) > 0:
+            return Team.objects.filter(
+                hackathon=self.hid
+                )
+        else:
+            return Team.objects.all()
 
     def get_allow_empty(self):
         return super(TeamListView, self).get_allow_empty()

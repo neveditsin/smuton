@@ -16,6 +16,7 @@ class JudgeListView(ListView):
     allow_empty = True
     page_kwarg = 'page'
     paginate_orphans = 0
+    hid = 0
 
     def __init__(self, **kwargs):
         return super(JudgeListView, self).__init__(**kwargs)
@@ -24,10 +25,16 @@ class JudgeListView(ListView):
         return super(JudgeListView, self).dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
+        self.hid = request.GET.get('hack_id', '0')
         return super(JudgeListView, self).get(request, *args, **kwargs)
 
     def get_queryset(self):
-        return super(JudgeListView, self).get_queryset()
+        if int(self.hid) > 0:
+            return Judge.objects.filter(
+                hackathon=self.hid
+                )
+        else:
+            return Judge.objects.all()
 
     def get_allow_empty(self):
         return super(JudgeListView, self).get_allow_empty()
