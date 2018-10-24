@@ -3,7 +3,6 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from ..models import Team, Hackathon
 from ..forms import TeamForm
-from django.urls import reverse_lazy
 from django.urls import reverse
 from django.http import Http404
 
@@ -234,7 +233,6 @@ class TeamUpdateView(UpdateView):
 
 class TeamDeleteView(DeleteView):
     model = Team
-    template_name = "core/team_delete.html"
     slug_field = 'slug'
     slug_url_kwarg = 'slug'
     pk_url_kwarg = 'pk'

@@ -5,15 +5,21 @@
 {% endblock %}
 
 {% block content %}
-    <h1>JudgingRounds</h1>
-    <h2><a href={% url "core:judging_round_create" %}>Create new JudgingRound</a></h2>
+    <h1>Judging Rounds For Hackathon "{{ hackathon }}"</h1>
+    <h2>
+    <form style="display:inline;" action={% url "core:judging_round_create" hackathon.pk %} method="post" onsubmit="return confirm('Are you sure you want to create a new Judging Round?')">{% csrf_token %}
+    <input type="submit" value="Create a new judging round" />
+    </form>
+    </h2>
     <ul>
     {% for judging_round in judging_round_list %}
-        <li><a href={% url "core:judging_round_detail" judging_round.pk %}>{{ judging_round }}</a> | <a href={% url "core:judging_round_update" judging_round.pk %}>Update</a> | <form style="display:inline;" action={% url "core:judging_round_delete" judging_round.pk %} method="post" onsubmit="return confirm('Are you sure you want to delete {{ judging_round }}?')">{% csrf_token %}
-    <input type="submit" value="Delete" />
+        <li><a href={% url "core:judging_round_detail" judging_round.pk %}?hack_id={{ hackathon.pk }}>{{ judging_round }}</a> 
+        | 
+        <form style="display:inline;" action={% url "core:judging_round_delete" judging_round.pk %}?hack_id={{ hackathon.pk }} method="post" onsubmit="return confirm('Are you sure you want to delete {{ judging_round }}?')">{% csrf_token %}
+        <input type="submit" value="Delete" />
     </form></li>
     {% empty %}
-        <li>No JudgingRounds yet.</li>
+        <li>No Judging Rounds yet.</li>
     {% endfor %}
     </ul>
 {% endblock %}

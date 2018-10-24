@@ -249,7 +249,7 @@ class JudgingRoundForm(forms.ModelForm):
     class Meta:
         model = JudgingRound
         fields = ['hackathon', 'number']
-        exclude = []
+        exclude = ['hackathon', 'number']
         widgets = None
         localized_fields = None
         labels = {}

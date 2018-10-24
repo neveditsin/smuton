@@ -3,7 +3,6 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from ..models import Judge, Hackathon
 from ..forms import JudgeForm
-from django.urls import reverse_lazy
 from django.urls import reverse
 from django.http import Http404
 
@@ -235,7 +234,6 @@ class JudgeUpdateView(UpdateView):
 
 class JudgeDeleteView(DeleteView):
     model = Judge
-    template_name = "core/judge_delete.html"
     slug_field = 'slug'
     slug_url_kwarg = 'slug'
     pk_url_kwarg = 'pk'

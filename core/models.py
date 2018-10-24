@@ -51,19 +51,9 @@ class Criteria(models.Model):
     
         
 class JudgingRound(models.Model):
-    ROUND_CHOICES = (
-        (1, '1'),
-        (2, '2'),
-        (3, '3'),
-        (4, '4'),
-        (5, '5')
-    )
     
     hackathon = models.ForeignKey(Hackathon, on_delete=models.CASCADE)
-    number = models.IntegerField(
-        choices=ROUND_CHOICES,
-        default=1,
-        verbose_name="Round")
+    number = models.IntegerField(default=1, verbose_name="Round")
     criteria = models.ManyToManyField(Criteria)
 
     def __str__(self):

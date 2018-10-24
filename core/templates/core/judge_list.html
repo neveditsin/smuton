@@ -5,8 +5,8 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Judges</h1>
-    <h2><a href={% url "core:judge_create" hackathon.pk %}>Create new Judge For Hackathon "{{ hackathon }}"</a></h2>
+    <h1>Judges For Hackathon "{{ hackathon }}"</h1>
+    <h2><a href={% url "core:judge_create" hackathon.pk %}>Create new Judge </a></h2>
     <ul>
     {% for judge in judge_list %}
         <li><a href={% url "core:judge_detail" judge.pk %}?hack_id={{ hackathon.pk }}>{{ judge }}</a>
