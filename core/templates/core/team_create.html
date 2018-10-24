@@ -5,12 +5,12 @@
 {% endblock %}
 
 {% block content %}
-<h1><a href={% url "core:team_list" %}>Team</a></h1>
+<h1><a href={% url "core:team_list" %}>Teams List for Hackathon "{{hackathon}}"</a></h1>
 <h2>Create Team</h2>
 
 <form action="" method="post">{% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="Create" />
 </form>
-<a href={% url "core:team_list" %}>Cancel</a>
+<a href={% url "core:team_list" %}?hack_id={{hackathon.pk}}>Cancel</a>
 {% endblock %}

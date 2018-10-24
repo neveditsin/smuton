@@ -6,10 +6,14 @@
 
 {% block content %}
     <h1>Judges</h1>
-    <h2><a href={% url "core:judge_create" %}>Create new Judge</a></h2>
+    <h2><a href={% url "core:judge_create" hackathon.pk %}>Create new Judge For Hackathon "{{ hackathon }}"</a></h2>
     <ul>
     {% for judge in judge_list %}
-        <li><a href={% url "core:judge_detail" judge.pk %}>{{ judge }}</a> | <a href={% url "core:judge_update" judge.pk %}>Update</a> | <form style="display:inline;" action={% url "core:judge_delete" judge.pk %} method="post" onsubmit="return confirm('Are you sure you want to delete {{ judge }}?')">{% csrf_token %}
+        <li><a href={% url "core:judge_detail" judge.pk %}?hack_id={{ hackathon.pk }}>{{ judge }}</a>
+         | 
+         <a href={% url "core:judge_update" judge.pk %}?hack_id={{ hackathon.pk }}>Update</a> 
+         | 
+         <form style="display:inline;" action={% url "core:judge_delete" judge.pk %}?hack_id={{ hackathon.pk }} method="post" onsubmit="return confirm('Are you sure you want to delete {{ judge }}?')">{% csrf_token %}
     <input type="submit" value="Delete" />
     </form></li>
     {% empty %}

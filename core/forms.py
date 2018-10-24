@@ -7,7 +7,7 @@ class JudgeForm(forms.ModelForm):
     class Meta:
         model = Judge
         fields = ['name', 'email', 'role', 'hackathon']
-        exclude = []
+        exclude = ['hackathon']
         widgets = None
         localized_fields = None
         labels = {}
@@ -50,7 +50,7 @@ class TeamForm(forms.ModelForm):
     class Meta:
         model = Team
         fields = ['name', 'participants', 'hackathon']
-        exclude = []
+        exclude = ['hackathon']
         widgets = None
         localized_fields = None
         labels = {}

@@ -5,9 +5,9 @@
 {% endblock %}
 
 {% block content %}
-    <h1><a href={% url "core:judge_list" %}>Judge</a></h1>
-    <h2>{{ judge }} | <a href={% url "core:judge_update" judge.pk %}>Update</a> | 
-    <form style="display:inline;" action={% url "core:judge_delete" judge.pk %} method="post" onsubmit="return confirm('Are you sure you want to delete {{ judge }}?')">{% csrf_token %}
+    <h1><a href={% url "core:judge_list" %}?hack_id={{hackathon.pk}}>Judges List for Hackathon "{{hackathon}}"</a></h1>
+    <h2>{{ judge }} | <a href={% url "core:judge_update" judge.pk %}?hack_id={{hackathon.pk}}>Update</a> | 
+    <form style="display:inline;" action={% url "core:judge_delete" judge.pk %}?hack_id={{hackathon.pk}} method="post" onsubmit="return confirm('Are you sure you want to delete {{ judge }}?')">{% csrf_token %}
     <input type="submit" value="Delete" />
     </form>
     </h2>

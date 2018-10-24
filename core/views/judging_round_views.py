@@ -16,7 +16,8 @@ class JudgingRoundListView(ListView):
     allow_empty = True
     page_kwarg = 'page'
     paginate_orphans = 0
-
+    hid = 0
+    
     def __init__(self, **kwargs):
         return super(JudgingRoundListView, self).__init__(**kwargs)
 
@@ -24,10 +25,16 @@ class JudgingRoundListView(ListView):
         return super(JudgingRoundListView, self).dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
+        self.hid = request.GET.get('hack_id', '0')
         return super(JudgingRoundListView, self).get(request, *args, **kwargs)
 
     def get_queryset(self):
-        return super(JudgingRoundListView, self).get_queryset()
+        if int(self.hid) > 0:
+            return JudgingRound.objects.filter(
+                hackathon=self.hid
+                )
+        else:
+            return JudgingRound.objects.all()
 
     def get_allow_empty(self):
         return super(JudgingRoundListView, self).get_allow_empty()
@@ -145,7 +152,7 @@ class JudgingRoundCreateView(CreateView):
         return super(JudgingRoundCreateView, self).get_template_names()
 
     def get_success_url(self):
-        return reverse("core:judging_round_detail", args=(self.object.pk,))
+        return reverse("core:judging_round_list", args=(self.object.pk,))
 
 
 class JudgingRoundUpdateView(UpdateView):
@@ -214,7 +221,7 @@ class JudgingRoundUpdateView(UpdateView):
         return super(JudgingRoundUpdateView, self).get_template_names()
 
     def get_success_url(self):
-        return reverse("core:judging_round_detail", args=(self.object.pk,))
+        return reverse("core:judging_round_list", args=(self.object.pk,))
 
 
 class JudgingRoundDeleteView(DeleteView):

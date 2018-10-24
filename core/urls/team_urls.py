@@ -1,27 +1,27 @@
-from django.conf.urls import url
+from django.urls import re_path
 from ..views import (TeamListView, TeamCreateView, TeamDetailView,
                      TeamUpdateView, TeamDeleteView)
 from django.contrib.auth.decorators import login_required
 
 
 urlpatterns = [
-    url(r'^create/$',  # NOQA
+    re_path(r'^create/(?P<hack_id>\d+)/$',
         login_required(TeamCreateView.as_view()),
         name="team_create"),
 
-    url(r'^(?P<pk>\d+)/update/$',
+    re_path(r'^(?P<pk>\d+)/update/$',
         login_required(TeamUpdateView.as_view()),
         name="team_update"),
 
-    url(r'^(?P<pk>\d+)/delete/$',
+    re_path(r'^(?P<pk>\d+)/delete/$',
         login_required(TeamDeleteView.as_view()),
         name="team_delete"),
 
-    url(r'^(?P<pk>\d+)/$',
+    re_path(r'^(?P<pk>\d+)/$',
         TeamDetailView.as_view(),
         name="team_detail"),
 
-    url(r'^$',
+    re_path(r'^$',
         TeamListView.as_view(),
         name="team_list"),
 ]

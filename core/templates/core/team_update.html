@@ -5,15 +5,15 @@
 {% endblock %}
 
 {% block content %}
-<h1><a href={% url "core:team_list" %}>Team</a></h1>
+<h1><a href={% url "core:team_list" %}?hack_id={{hackathon.pk}}>Teams List for Hackathon "{{hackathon}}"</a></h1>
 <h2>Update {{ team }}</h2>
 
 <form action="" method="post">{% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="Update" />
 </form>
-<a href={% url "core:team_detail" team.pk %}>Cancel</a>
-<form style="display:inline;" action={% url "core:team_delete" team.pk %} method="post" onsubmit="return confirm('Are you sure you want to delete {{ team }}?')">{% csrf_token %}
+<a href={% url "core:team_detail" team.pk %}?hack_id={{hackathon.pk}}>Cancel</a>
+<form style="display:inline;" action={% url "core:team_delete" team.pk %}?hack_id={{hackathon.pk}} method="post" onsubmit="return confirm('Are you sure you want to delete {{ team }}?')">{% csrf_token %}
     <input type="submit" value="Delete" />
 </form>
 {% endblock %}

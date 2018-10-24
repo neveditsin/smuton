@@ -1,11 +1,12 @@
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
-from ..models import Judge
+from ..models import Judge, Hackathon
 from ..forms import JudgeForm
 from django.urls import reverse_lazy
 from django.urls import reverse
 from django.http import Http404
+
 
 
 class JudgeListView(ListView):
@@ -16,7 +17,6 @@ class JudgeListView(ListView):
     allow_empty = True
     page_kwarg = 'page'
     paginate_orphans = 0
-    hid = 0
 
     def __init__(self, **kwargs):
         return super(JudgeListView, self).__init__(**kwargs)
@@ -41,6 +41,7 @@ class JudgeListView(ListView):
 
     def get_context_data(self, *args, **kwargs):
         ret = super(JudgeListView, self).get_context_data(*args, **kwargs)
+        ret['hackathon'] = Hackathon.objects.get(pk=self.hid)
         return ret
 
     def get_paginate_by(self, queryset):
@@ -77,6 +78,7 @@ class JudgeDetailView(DetailView):
         return super(JudgeDetailView, self).dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
+        self.hid = request.GET.get('hack_id', '0')
         return super(JudgeDetailView, self).get(request, *args, **kwargs)
 
     def get_object(self, queryset=None):
@@ -90,6 +92,7 @@ class JudgeDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         ret = super(JudgeDetailView, self).get_context_data(**kwargs)
+        ret['hackathon'] = Hackathon.objects.get(pk=self.hid)
         return ret
 
     def get_context_object_name(self, obj):
@@ -107,7 +110,7 @@ class JudgeCreateView(CreateView):
     form_class = JudgeForm
     # fields = ['first_name', 'last_name', 'email']
     template_name = "core/judge_create.html"
-    success_url = reverse_lazy("judge_list")
+    #success_url = reverse_lazy("judge_list")
 
     def __init__(self, **kwargs):
         return super(JudgeCreateView, self).__init__(**kwargs)
@@ -125,7 +128,8 @@ class JudgeCreateView(CreateView):
         return super(JudgeCreateView, self).get_form_class()
 
     def get_form(self, form_class=None):
-        return super(JudgeCreateView, self).get_form(form_class)
+        form = super(JudgeCreateView, self).get_form(form_class)       
+        return form       
 
     def get_form_kwargs(self, **kwargs):
         return super(JudgeCreateView, self).get_form_kwargs(**kwargs)
@@ -138,11 +142,13 @@ class JudgeCreateView(CreateView):
 
     def form_valid(self, form):
         obj = form.save(commit=False)
+        obj.hackathon = Hackathon.objects.get(pk=self.kwargs['hack_id']) 
         obj.save()
         return super(JudgeCreateView, self).form_valid(form)
 
     def get_context_data(self, **kwargs):
         ret = super(JudgeCreateView, self).get_context_data(**kwargs)
+        ret['hackathon'] = Hackathon.objects.get(pk=self.kwargs['hack_id'])
         return ret
 
     def render_to_response(self, context, **response_kwargs):
@@ -152,7 +158,7 @@ class JudgeCreateView(CreateView):
         return super(JudgeCreateView, self).get_template_names()
 
     def get_success_url(self):
-        return reverse("core:judge_detail", args=(self.object.pk,))
+        return reverse("core:judge_list") + "?hack_id=" + self.kwargs['hack_id']
 
 
 class JudgeUpdateView(UpdateView):
@@ -173,9 +179,11 @@ class JudgeUpdateView(UpdateView):
         return super(JudgeUpdateView, self).dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
+        self.hid = request.GET.get('hack_id', '0')
         return super(JudgeUpdateView, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
+        self.hid = request.GET.get('hack_id', '0')
         return super(JudgeUpdateView, self).post(request, *args, **kwargs)
 
     def get_object(self, queryset=None):
@@ -209,6 +217,7 @@ class JudgeUpdateView(UpdateView):
 
     def get_context_data(self, **kwargs):
         ret = super(JudgeUpdateView, self).get_context_data(**kwargs)
+        ret['hackathon'] = Hackathon.objects.get(pk=self.hid)
         return ret
 
     def get_context_object_name(self, obj):
@@ -221,7 +230,7 @@ class JudgeUpdateView(UpdateView):
         return super(JudgeUpdateView, self).get_template_names()
 
     def get_success_url(self):
-        return reverse("core:judge_detail", args=(self.object.pk,))
+        return reverse("core:judge_list") +  "?hack_id=" + self.hid
 
 
 class JudgeDeleteView(DeleteView):
@@ -242,6 +251,7 @@ class JudgeDeleteView(DeleteView):
         raise Http404
 
     def post(self, request, *args, **kwargs):
+        self.hid = request.GET.get('hack_id', '0')
         return super(JudgeDeleteView, self).post(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
@@ -270,4 +280,4 @@ class JudgeDeleteView(DeleteView):
         return super(JudgeDeleteView, self).get_template_names()
 
     def get_success_url(self):
-        return reverse("core:judge_list")
+        return reverse("core:judge_list") + "?hack_id=" + self.hid

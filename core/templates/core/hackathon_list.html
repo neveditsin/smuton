@@ -17,6 +17,8 @@
          <a href={% url "core:judge_list" %}?hack_id={{ hackathon.pk }}>Judges</a>
          |
          <a href={% url "core:team_list" %}?hack_id={{ hackathon.pk }}>Teams</a>
+         |
+         <a href={% url "core:judging_round_list" %}?hack_id={{ hackathon.pk }}>Rounds</a>
          <form style="display:inline;" action={% url "core:hackathon_delete" hackathon.pk %} method="post" onsubmit="return confirm('Are you sure you want to delete {{ hackathon }}?')">
          {% csrf_token %}
        

@@ -1,7 +1,7 @@
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
-from ..models import Team
+from ..models import Team, Hackathon
 from ..forms import TeamForm
 from django.urls import reverse_lazy
 from django.urls import reverse
@@ -41,6 +41,7 @@ class TeamListView(ListView):
 
     def get_context_data(self, *args, **kwargs):
         ret = super(TeamListView, self).get_context_data(*args, **kwargs)
+        ret['hackathon'] = Hackathon.objects.get(pk=self.hid)
         return ret
 
     def get_paginate_by(self, queryset):
@@ -77,6 +78,7 @@ class TeamDetailView(DetailView):
         return super(TeamDetailView, self).dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
+        self.hid = request.GET.get('hack_id', '0')
         return super(TeamDetailView, self).get(request, *args, **kwargs)
 
     def get_object(self, queryset=None):
@@ -90,6 +92,7 @@ class TeamDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         ret = super(TeamDetailView, self).get_context_data(**kwargs)
+        ret['hackathon'] = Hackathon.objects.get(pk=self.hid)
         return ret
 
     def get_context_object_name(self, obj):
@@ -107,7 +110,7 @@ class TeamCreateView(CreateView):
     form_class = TeamForm
     # fields = ['name', 'participants']
     template_name = "core/team_create.html"
-    success_url = reverse_lazy("team_list")
+    #success_url = reverse_lazy("team_list")
 
     def __init__(self, **kwargs):
         return super(TeamCreateView, self).__init__(**kwargs)
@@ -138,11 +141,13 @@ class TeamCreateView(CreateView):
 
     def form_valid(self, form):
         obj = form.save(commit=False)
+        obj.hackathon = Hackathon.objects.get(pk=self.kwargs['hack_id']) 
         obj.save()
         return super(TeamCreateView, self).form_valid(form)
 
     def get_context_data(self, **kwargs):
         ret = super(TeamCreateView, self).get_context_data(**kwargs)
+        ret['hackathon'] = Hackathon.objects.get(pk=self.kwargs['hack_id'])        
         return ret
 
     def render_to_response(self, context, **response_kwargs):
@@ -152,7 +157,7 @@ class TeamCreateView(CreateView):
         return super(TeamCreateView, self).get_template_names()
 
     def get_success_url(self):
-        return reverse("core:team_detail", args=(self.object.pk,))
+        return reverse("core:team_list") + "?hack_id=" + self.kwargs['hack_id']
 
 
 class TeamUpdateView(UpdateView):
@@ -173,9 +178,11 @@ class TeamUpdateView(UpdateView):
         return super(TeamUpdateView, self).dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
+        self.hid = request.GET.get('hack_id', '0')        
         return super(TeamUpdateView, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
+        self.hid = request.GET.get('hack_id', '0')        
         return super(TeamUpdateView, self).post(request, *args, **kwargs)
 
     def get_object(self, queryset=None):
@@ -209,6 +216,7 @@ class TeamUpdateView(UpdateView):
 
     def get_context_data(self, **kwargs):
         ret = super(TeamUpdateView, self).get_context_data(**kwargs)
+        ret['hackathon'] = Hackathon.objects.get(pk=self.hid) 
         return ret
 
     def get_context_object_name(self, obj):
@@ -221,7 +229,7 @@ class TeamUpdateView(UpdateView):
         return super(TeamUpdateView, self).get_template_names()
 
     def get_success_url(self):
-        return reverse("core:team_detail", args=(self.object.pk,))
+        return reverse("core:team_list")  +  "?hack_id=" + self.hid
 
 
 class TeamDeleteView(DeleteView):
@@ -242,6 +250,7 @@ class TeamDeleteView(DeleteView):
         raise Http404
 
     def post(self, request, *args, **kwargs):
+        self.hid = request.GET.get('hack_id', '0')        
         return super(TeamDeleteView, self).post(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
@@ -270,4 +279,4 @@ class TeamDeleteView(DeleteView):
         return super(TeamDeleteView, self).get_template_names()
 
     def get_success_url(self):
-        return reverse("core:team_list")
+        return reverse("core:team_list")  +  "?hack_id=" + self.hid
