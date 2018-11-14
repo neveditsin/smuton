@@ -20,4 +20,5 @@ urlpatterns = [
     re_path(r'^$',
         JudgingRoundListView.as_view(),
         name="judging_round_list"),
+    
 ]
