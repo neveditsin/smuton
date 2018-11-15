@@ -23,8 +23,6 @@ from django.http import Http404
 class SumbitFormView(TemplateView):
     template_name = "core/form_create.html"
     
-    def dynamicformpage1(self, request, *args, **kwargs):
-        return render(request, 'DynamicFormPage1.html')
     
     def post(self, request, *args, **kwargs):
         print(request.POST)
@@ -52,7 +50,7 @@ class SumbitFormView(TemplateView):
             name.save()
     
     def get_criteria_names(self, request):
-        self.hid = request.GET.get('jr_id', '0')
+        #self.hid = request.GET.get('jr_id', '0')
         if request.is_ajax():
             q = request.GET.get('term', '')
             names = Criteria.objects.filter(name__icontains = q )[:20]
@@ -70,42 +68,11 @@ class SumbitFormView(TemplateView):
         return HttpResponse(data, mimetype)
     
     def get_context_data(self, *args, **kwargs):
+        self.kwargs['jround_id']
         ret = super(SumbitFormView, self).get_context_data(*args, **kwargs)
         ret['scale'] = Scale.objects.all()
         return ret
     
-    
-class DynamicFormView1(View):#CreateView? Check all available views  try
-    template_name = "core/DynamicFormPage1.html"
-    
-    
-    def get(self, request, *args, **kwargs):
-        form = DynamicForm()
-        return render(request, self.template_name, {'form': form})
-    
-    def post(self, request, *args, **kwargs):
-        form = DynamicForm(request.POST)
-        
-        if form.is_valid():
-            data = request.POST.copy()
-            form = DynamicForm()
-            
-        if request.method == 'POST':
-            form = DynamicForm(request.POST)
-            
-        
-        args = {'form': form, 'data':data}
-        models.Criteria.objects.all()
-        models.Scale.objects.all()
-        print(request.POST)
-        return render(request, self.template_name, args)
-        #return render(request, self.template_name, answer)
-        #return super(DynamicFormView, self).post(request, *args, **kwargs)
-        
-class DynamicFormView2(CreateView):#CreateView? Check all available views  try
-    template_name = "core/DynamicFormPage2.html"
-    model = Criteria
-    form_class = DynamicForm
-    success_url = reverse_lazy("dynamic2")
+
 
 

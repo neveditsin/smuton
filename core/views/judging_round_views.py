@@ -84,7 +84,6 @@ class JudgingRoundDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         ret = super(JudgingRoundDetailView, self).get_context_data(**kwargs)
-        ret['hackathon'] = Hackathon.objects.get(pk=self.hid)
         return ret
 
     def get_context_object_name(self, obj):
