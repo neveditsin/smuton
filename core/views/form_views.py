@@ -52,6 +52,7 @@ class SumbitFormView(TemplateView):
             name.save()
     
     def get_criteria_names(self, request):
+        self.hid = request.GET.get('jr_id', '0')
         if request.is_ajax():
             q = request.GET.get('term', '')
             names = Criteria.objects.filter(name__icontains = q )[:20]

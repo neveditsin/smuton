@@ -11,9 +11,6 @@
     <input type="submit" value="Create a new judging round" />
     </form>
     </h2>
-    
-    <p><a href={% url "core:hackathon_form" %}> Create form here! </a></p>
-    
     <ul>
     {% for judging_round in judging_round_list %}
         <li><a href={% url "core:judging_round_detail" judging_round.pk %}?hack_id={{ hackathon.pk }}>{{ judging_round }}</a> 
