@@ -5,6 +5,8 @@ from ..models import JudgingRound, Hackathon
 from ..forms import JudgingRoundForm
 from django.urls import reverse
 from django.http import Http404
+from django.shortcuts import render
+
 
 
 class JudgingRoundListView(ListView):
@@ -17,6 +19,9 @@ class JudgingRoundListView(ListView):
     def __init__(self, **kwargs):
         return super(JudgingRoundListView, self).__init__(**kwargs)
 
+    def initialformpage1(self, request, *args, **kwargs):
+        return render(request, 'InitialFormPage1.html')
+    
     def dispatch(self, *args, **kwargs):
         return super(JudgingRoundListView, self).dispatch(*args, **kwargs)
 
@@ -79,7 +84,7 @@ class JudgingRoundDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         ret = super(JudgingRoundDetailView, self).get_context_data(**kwargs)
-        ret['hackathon'] = Hackathon.objects.get(pk=self.hid)
+        ret['form_created'] = JudgingRound.objects.get(pk = self.kwargs['pk']).criteria.count()
         return ret
 
     def get_context_object_name(self, obj):
