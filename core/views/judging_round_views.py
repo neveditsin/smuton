@@ -84,6 +84,7 @@ class JudgingRoundDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         ret = super(JudgingRoundDetailView, self).get_context_data(**kwargs)
+        ret['form_created'] = JudgingRound.objects.get(pk = self.kwargs['pk']).criteria.count()
         return ret
 
     def get_context_object_name(self, obj):
