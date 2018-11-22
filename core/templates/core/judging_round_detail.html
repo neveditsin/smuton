@@ -5,9 +5,9 @@
 {% endblock %}
 
 {% block content %}
-    <h1><a href={% url "core:judging_round_list" %}?hack_id={{ hackathon.pk }}>Judging Round</a></h1>
+    <h1><a href={% url "core:judging_round_list" %}?hack_id={{ judging_round.hackathon.pk }}>Judging Round</a></h1>
     <p><a href={% url "core:hackathon_form" judging_round.pk %}> Create form here! </a></p>
-    <form style="display:inline;" action={% url "core:judging_round_delete" judging_round.pk %}?hack_id={{ hackathon.pk }} method="post" onsubmit="return confirm('Are you sure you want to delete {{ judging_round }}?')">{% csrf_token %}
+    <form style="display:inline;" action={% url "core:judging_round_delete" judging_round.pk %}?hack_id={{ judging_round.hackathon.pk }} method="post" onsubmit="return confirm('Are you sure you want to delete {{ judging_round }}?')">{% csrf_token %}
     <input type="submit" value="Delete" />
     </form>
     </h2>
