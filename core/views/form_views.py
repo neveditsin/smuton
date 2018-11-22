@@ -2,8 +2,6 @@ from django.http import HttpResponse
 import csv
 import json
 from django.views.generic import TemplateView
-from core import models
-
 
 from ..models import Criteria, Scale, JudgingRound
 from django.urls import reverse
@@ -15,7 +13,19 @@ class SumbitFormView(TemplateView):
     template_name = "core/form_create.html"
     
     def post(self, request, *args, **kwargs):
-        print(request.POST)
+        p = request.POST
+        i = 1 #start from name1, scale1
+        while 'name'+str(i) in p:
+            name = p['name'+str(i)]
+            scale = p['scale'+str(i)]
+            #TODO: now we update if already have it in DB. Need to throw an error    
+            crit, created = Criteria.objects.update_or_create(
+                name = name,
+                scale = Scale.objects.get(pk=scale)
+                )
+            print(created)
+            JudgingRound.objects.get(pk=self.kwargs['jround_id']).criteria.add(crit)
+            i+=1
 
         return HttpResponseRedirect(self.get_success_url())
         return reverse("core:hackathon_list")

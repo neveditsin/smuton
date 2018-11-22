@@ -41,7 +41,7 @@ if (append_checker!=0){
 	append_checker = 1;
 	$('#container').empty();
 	for(var i=0; i < value; i++){
-		var criterion_html = '<div id="items"><font color="#922b21">Criteria '+(i+1)+' :</font><input type="text" name="name'+(i+1)+'" ><br><font color="#922b21">Scale </font><select  id="scale'+(i+1)+'" name="scale'+(i+1)+'">{% for entry in scale %}<option value="{{ entry.name }}">{{ entry.name }}</option>{% endfor %}</select></div>'
+		var criterion_html = '<div id="items"><font color="#922b21">Criteria '+(i+1)+' :</font><input type="text" name="name'+(i+1)+'" ><br><font color="#922b21">Scale </font><select  id="scale'+(i+1)+'" name="scale'+(i+1)+'">{% for entry in scale %}<option value="{{ entry.pk }}">{{ entry.name }}</option>{% endfor %}</select></div>'
 		$('#container').append(criterion_html);	
 	}
 }	
@@ -84,12 +84,6 @@ if (append_checker!=0){
 <br>
 <br>
 <p style="margin-left:30px; ">
-<font color="#922b21">Types of evaluators</font>
-  <input type="checkbox" name="Instructors" value="Instructors"> Instructors
-  <input type="checkbox" name="Peers" value="Peers"> Peers
-  <input type="checkbox" name="Self" value="Self"> Self
-  <input type="checkbox" name="Other" value="Other"> Other (specify) <input type="text"><br>
-<font color="#922b21">(Check all to be included)</font>
 </p>
 <br>
 <br>
@@ -112,9 +106,7 @@ if (append_checker!=0){
 <br>
 <br>
 <br>
-<a href="preview1.html">
-<button id="preview" style="margin-left:30px;">Preview</button>
-</a>
+
 
 </body>
 </html>
