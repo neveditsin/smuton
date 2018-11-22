@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+
+
+
+<head>
+<meta charset="ISO-8859-1">
+<title>Judging form!</title>
+<!-- <script type="text/javascript" src="smuton-master/static/js/FieldAdder1.js"></script> -->
+<!-- <script type="text/javascript" src="smuton-master/static/js/FieldAdder2.js"></script> -->
+<script>
+function lala(){
+	var k = document.getElementById("noofcriteria");
+	var l = k.options[k.selectedIndex].value;
+
+	if(l=='1'){
+		document.getElementById("items1").style.display = "block";
+		document.getElementById("items2").style.display = "none";
+		document.getElementById("items3").style.display = "none";
+		document.getElementById("items4").style.display = "none";
+		document.getElementById("items5").style.display = "none";
+	}
+	if(l=='2'){
+		document.getElementById("items1").style.display = "block";
+		document.getElementById("items2").style.display = "block";
+		document.getElementById("items3").style.display = "none";
+		document.getElementById("items4").style.display = "none";
+		document.getElementById("items5").style.display = "none";
+	}
+	if(l=='3'){
+		document.getElementById("items1").style.display = "block";
+		document.getElementById("items2").style.display = "block";
+		document.getElementById("items3").style.display = "block";
+		document.getElementById("items4").style.display = "none";
+		document.getElementById("items5").style.display = "none";
+	}
+	if(l=='4'){
+		document.getElementById("items1").style.display = "block";
+		document.getElementById("items2").style.display = "block";
+		document.getElementById("items3").style.display = "block";
+		document.getElementById("items4").style.display = "block";
+		document.getElementById("items5").style.display = "none";
+	}
+	if(l=='5'){
+		document.getElementById("items1").style.display = "block";
+		document.getElementById("items2").style.display = "block";
+		document.getElementById("items3").style.display = "block";
+		document.getElementById("items4").style.display = "block";
+		document.getElementById("items5").style.display = "block";
+	}
+	
+	
+}
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-colors-highway.css"> 
+
+</head>
+<body>
+
+
+
+<form action="" method="post">
+{% csrf_token %}
+{{from}}
+<!-- {{form.as_p}} -->
+
+
+<div class="w3-container w3-highway-red w3-center">
+<h1>Create Form</h1>
+</div>
+<br>
+<br>
+<p style="margin-left:30px; ">
+<font color="#922b21">How many criteria?</font>
+<select  id="noofcriteria" onclick="lala()">
+  <option value="1">1</option>
+  <option value="2">2</option>
+  <option value="3">3</option>
+  <option value="4">4</option>
+  <option value="5">5</option>
+</select>
+</p>
+
+<br>
+<br>
+<p style="margin-left:30px; ">
+<font color="#922b21">Types of evaluators</font>
+  <input type="checkbox" name="Instructors" value="Instructors"> Instructors
+  <input type="checkbox" name="Peers" value="Peers"> Peers
+  <input type="checkbox" name="Self" value="Self"> Self
+  <input type="checkbox" name="Other" value="Other"> Other (specify) <input type="text"><br>
+<font color="#922b21">(Check all to be included)</font>
+</p>
+<br>
+<br>
+<br>
+
+
+
+
+
+
+
+
+
+<div style="margin-left:30px; ">
+<div id="items1" style=display:none>
+<font color="#922b21">Criteria 1:</font>
+<input type="text" ><br>
+<font color="#922b21">Scale </font>
+<select  id="scale1">
+  <option value="-----">-----</option>
+  <option value="1-5">1-5</option>
+  <option value="Yes/No">Yes/No</option>
+</select>
+</div>
+<div id="items2" style=display:none>
+<font color="#922b21">Criteria 2:</font>
+<input type="text" ><br>
+<font color="#922b21">Scale </font>
+<select  id="scale2">
+  <option value="-----">-----</option>
+  <option value="1-5">1-5</option>
+  <option value="Yes/No">Yes/No</option>
+</select>
+</div>
+<div id="items3" style=display:none>
+<font color="#922b21">Criteria 3:</font>
+<input type="text" ><br>
+<font color="#922b21">Scale </font>
+<select  id="scale3">
+  <option value="-----">-----</option>
+  <option value="1-5">1-5</option>
+  <option value="Yes/No">Yes/No</option>
+</select>
+</div>
+<div id="items4" style=display:none>
+<font color="#922b21">Criteria 4:</font>
+<input type="text" ><br>
+<font color="#922b21">Scale </font>
+<select  id="scale4">
+  <option value="-----">-----</option>
+  <option value="1-5">1-5</option>
+  <option value="Yes/No">Yes/No</option>
+</select>
+</div>
+<div id="items5" style=display:none>
+<font color="#922b21">Criteria 5:</font>
+<input type="text" ><br>
+<font color="#922b21">Scale </font>
+<select  id="scale5">
+  <option value="-----">-----</option>
+  <option value="1-5">1-5</option>
+  <option value="Yes/No">Yes/No</option>
+</select>
+</div>
+<input type="submit" value="Submit"/>
+</div>
+
+</form>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<a href="preview1.html">
+<button id="preview" style="margin-left:30px;">Preview</button>
+</a>
+
+</body>
+</html>
