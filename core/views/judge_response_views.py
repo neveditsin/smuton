@@ -1,4 +1,3 @@
-from django.views.generic.detail import DetailView
 from django.views.generic.edit import DeleteView
 from django.views.generic import TemplateView
 from django.views.generic.list import ListView
@@ -6,7 +5,7 @@ from ..models import JudgeResponse, JudgingRound
 from ..forms import JudgeResponseForm, JudgeResponseFormHead
 from django.urls import reverse
 from django.http import HttpResponseRedirect
-
+from django.http import HttpResponse
 
 class JudgeResponseListView(ListView):
     model = JudgeResponse
@@ -55,25 +54,19 @@ class JudgeResponseListView(ListView):
         return super(JudgeResponseListView, self).get_template_names()
 
 
-class JudgeResponseDetailView(DetailView):
-    model = JudgeResponse
-    template_name = "core/judge_response_detail.html"
-    context_object_name = "judge_response"
-    slug_field = 'slug'
-    slug_url_kwarg = 'slug'
-    pk_url_kwarg = 'pk'
+class JudgeResponseLanding(TemplateView):
+    template_name = "core/judge_response_landing.html"
 
     def __init__(self, **kwargs):
-        return super(JudgeResponseDetailView, self).__init__(**kwargs)
+        return super(JudgeResponseLanding, self).__init__(**kwargs)
 
 
     def get_context_data(self, **kwargs):
-        ret = super(JudgeResponseDetailView, self).get_context_data(**kwargs)
+        ret = super(JudgeResponseLanding, self).get_context_data(**kwargs)
         return ret
 
 
-    def get_template_names(self):
-        return super(JudgeResponseDetailView, self).get_template_names()
+
 
 
 class JudgeResponseCreateView(TemplateView):
@@ -91,7 +84,22 @@ class JudgeResponseCreateView(TemplateView):
         return super(JudgeResponseCreateView, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        print(request.POST)
+        jr = JudgingRound.objects.get(pk=kwargs['jround_id']) 
+        judge_team = JudgeResponseFormHead(jr,request.POST)
+        if judge_team.is_valid():
+            for cr in jr.criteria.all():
+                mark = JudgeResponseForm(cr, request.POST, prefix=cr.pk)
+                if mark.is_valid():      
+                    JudgeResponse.objects.create(
+                        round = jr,
+                        team = judge_team.cleaned_data['team'],
+                        judge = judge_team.cleaned_data['judge'],
+                        criterion = cr,
+                        mark = mark.cleaned_data['mark'],
+                        )
+                else:
+                    return HttpResponse(status=500)
+                
         return HttpResponseRedirect(self.get_success_url())
 
 
@@ -103,7 +111,7 @@ class JudgeResponseCreateView(TemplateView):
         return ret
  
     def get_success_url(self):
-        return reverse("core:judging_round_detail", kwargs={'pk':self.kwargs['jround_id']})
+        return reverse("core:judge_response_landing", kwargs={'jround_id':self.kwargs['jround_id']})
 
 
 

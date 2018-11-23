@@ -284,24 +284,16 @@ class JudgingRoundForm(forms.ModelForm):
         return super(JudgingRoundForm, self).save(commit)
 
 
-from django.utils.safestring import mark_safe
-class HorizontalRadioRenderer(forms.RadioSelect):
-    def render(self):
-        return mark_safe(u'\n'.join([u'%s\n' % w for w in self]))
- 
-
-
-
 class JudgeResponseFormHead(forms.Form):
     def __init__(self, jround, *args, **kwargs):
         super(JudgeResponseFormHead, self).__init__(*args, **kwargs)
         self.jround = jround
         self.fields['judge'] = forms.ModelChoiceField(queryset=Judge.objects.filter(hackathon = self.jround.hackathon), \
-                                                     widget=forms.RadioSelect(), label = "Judge", \
-                                                     required=True, empty_label = None)
+                                                         widget=forms.RadioSelect(), label = "Judge", \
+                                                         required=True, empty_label = None)
         self.fields['team'] = forms.ModelChoiceField(queryset=Team.objects.filter(hackathon = self.jround.hackathon), \
-                                                     widget=forms.RadioSelect(), label = "Team", \
-                                                     required=True, empty_label = None) 
+                                                         widget=forms.RadioSelect(), label = "Team", \
+                                                         required=True, empty_label = None) 
 
 class JudgeResponseForm(forms.Form):
     def __init__(self, criteria, *args, **kwargs):

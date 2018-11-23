@@ -17,14 +17,14 @@ class Judge(models.Model):
     email = models.EmailField(blank=True)
     hackathon = models.ForeignKey(Hackathon, on_delete=models.CASCADE)
     def __str__(self):
-        return "(id:" + str(self.pk) + "; name:" + self.name + ")"
+        return self.name #"(id:" + str(self.pk) + "; name:" + self.name + ")"
 
 class Team(models.Model):
     name = models.CharField(max_length=128, verbose_name="Team Name")
     participants = models.CharField(max_length=512, verbose_name="Participants: comma-separated", blank=True)
     hackathon = models.ForeignKey(Hackathon, on_delete=models.CASCADE)
     def __str__(self):
-        return "(id:" + str(self.pk) + "; name:" + self.name + ")"
+        return self.name# "(id:" + str(self.pk) + "; name:" + self.name + ")"
 
 class Scale(models.Model):
     name = models.CharField(max_length=64, verbose_name="Scale Name", unique=True)
@@ -37,7 +37,7 @@ class ScaleEntry(models.Model):
     weight = models.IntegerField(verbose_name="Weight")
     scale = models.ForeignKey(Scale, on_delete=models.CASCADE)
     def __str__(self):
-        return  self.entry + " (" + self.scale.name + ")"
+        return  self.entry # + " (" + self.scale.name + ")"
     class Meta:
         unique_together = (('scale', 'entry'))    
     
