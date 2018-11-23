@@ -8,6 +8,7 @@
     <h1><a href={% url "core:judging_round_list" %}?hack_id={{ judging_round.hackathon.pk }}>{{judging_round}} of hackathon '{{judging_round.hackathon}}'</a></h1>
     {% if form_created %}
         <p><a href={% url "core:judge_response_create" judging_round.pk %}> Link to form</a></p>
+        <p><a href={% url "core:judge_response_list" judging_round.pk %}> View Responses</a></p>        
     {% else %}
         <p><a href={% url "core:hackathon_form" judging_round.pk %}> Create a form </a></p>
     {% endif %}

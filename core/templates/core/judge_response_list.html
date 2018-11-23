@@ -5,11 +5,10 @@
 {% endblock %}
 
 {% block content %}
-    <h1>JudgeResponses</h1>
-    <h2><a href={% url "core:judge_response_create" %}>Create new JudgeResponse</a></h2>
+    <h1>Judge Responses: {{ jround.hackathon }}. Round: <a href={% url "core:judging_round_detail" jround.pk %}>{{ jround }}</a></h1>
     <ul>
     {% for judge_response in judge_response_list %}
-        <li><a href={% url "core:judge_response_detail" judge_response.pk %}>{{ judge_response }}</a> | <a href={% url "core:judge_response_update" judge_response.pk %}>Update</a> | <form style="display:inline;" action={% url "core:judge_response_delete" judge_response.pk %} method="post" onsubmit="return confirm('Are you sure you want to delete {{ judge_response }}?')">{% csrf_token %}
+        <li><p>{{ judge_response }}</p> | <form style="display:inline;" action={% url "core:judge_response_delete" judge_response.pk %} method="post" onsubmit="return confirm('Are you sure you want to delete {{ judge_response }}?')">{% csrf_token %}
     <input type="submit" value="Delete" />
     </form></li>
     {% empty %}

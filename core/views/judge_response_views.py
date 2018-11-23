@@ -1,5 +1,4 @@
-from django.views.generic.edit import DeleteView
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, DeleteView
 from django.views.generic.list import ListView
 from ..models import JudgeResponse, JudgingRound
 from ..forms import JudgeResponseForm, JudgeResponseFormHead
@@ -23,16 +22,21 @@ class JudgeResponseListView(ListView):
         return super(JudgeResponseListView, self).dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
+        self.jr = JudgingRound.objects.get(pk=kwargs['jround_id']) 
         return super(JudgeResponseListView, self).get(request, *args, **kwargs)
 
     def get_queryset(self):
-        return super(JudgeResponseListView, self).get_queryset()
+        return JudgeResponse.objects.filter(
+                round = self.jr
+                )
+    
 
     def get_allow_empty(self):
         return super(JudgeResponseListView, self).get_allow_empty()
 
     def get_context_data(self, *args, **kwargs):
         ret = super(JudgeResponseListView, self).get_context_data(*args, **kwargs)
+        ret['jround'] = self.jr
         return ret
 
     def get_paginate_by(self, queryset):
@@ -64,9 +68,6 @@ class JudgeResponseLanding(TemplateView):
     def get_context_data(self, **kwargs):
         ret = super(JudgeResponseLanding, self).get_context_data(**kwargs)
         return ret
-
-
-
 
 
 class JudgeResponseCreateView(TemplateView):
@@ -112,9 +113,9 @@ class JudgeResponseCreateView(TemplateView):
  
     def get_success_url(self):
         return reverse("core:judge_response_landing", kwargs={'jround_id':self.kwargs['jround_id']})
-
-
-
+    
+    
+    
 class JudgeResponseDeleteView(DeleteView):
     model = JudgeResponse
     template_name = "core/judge_response_delete.html"
@@ -124,4 +125,4 @@ class JudgeResponseDeleteView(DeleteView):
     context_object_name = "judge_response"
 
     def get_success_url(self):
-        return reverse("core:judge_response_list")
+        return reverse("core:judge_response_list", kwargs={'jround_id':self.kwargs['jround_id']})

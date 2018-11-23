@@ -5,8 +5,8 @@
 {% endblock %}
 
 {% block content %}
-<h1><a href={% url "core:judge_response_list" %}>Judging Form</a></h1>
-<h2>Create JudgeResponse</h2>
+<h1>Judging Form</h1>
+<h2>Create Judge Response</h2>
 
 <form action="" method="post">{% csrf_token %}
     {{head_form.as_p}}

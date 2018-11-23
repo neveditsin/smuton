@@ -1,6 +1,6 @@
 from django.conf.urls import url
-from ..views import (JudgeResponseListView, JudgeResponseCreateView, JudgeResponseLanding,
-                     JudgeResponseDeleteView)
+from ..views import (JudgeResponseListView, JudgeResponseCreateView, JudgeResponseLanding, JudgeResponseDeleteView
+                     )
 from django.contrib.auth.decorators import login_required
 
 
@@ -9,15 +9,16 @@ urlpatterns = [
         login_required(JudgeResponseCreateView.as_view()),
         name="judge_response_create"),
 
-    url(r'^(?P<pk>\d+)/delete/$',
-        login_required(JudgeResponseDeleteView.as_view()),
-        name="judge_response_delete"),
-
     url(r'^(?P<jround_id>\d+)/$',
         JudgeResponseLanding.as_view(),
         name="judge_response_landing"),
 
-    url(r'^$',
+    url(r'^list/(?P<jround_id>\d+)$',
         JudgeResponseListView.as_view(),
         name="judge_response_list"),
+    
+    url(r'^(?P<pk>\d+)/delete/$',
+        login_required(JudgeResponseDeleteView.as_view()),
+        name="judge_response_delete"),
+
 ]
