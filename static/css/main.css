@@ -18,7 +18,16 @@ textarea {
     color: #222;
 }
 
+h8 {
+	color: #922b21;
+}
+
+h1 {
+	class: "w3-container w3-highway-red w3-center"
+}
+
 body {
+	padding-left: 30px;
     font-size: 1em;
     line-height: 1.4;
 }

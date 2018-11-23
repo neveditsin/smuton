@@ -10,7 +10,6 @@
 
 <form action="" method="post">{% csrf_token %}
     {{head_form.as_p}}
-    {{ formset.management_form }}
     {% for form in forms %}
 		{{ form.as_p }}
     {% endfor %}
