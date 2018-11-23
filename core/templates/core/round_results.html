@@ -1,0 +1,12 @@
+{% extends "core/judge_response_base.html" %}
+
+{% block title %}
+    Round Results
+{% endblock %}
+
+{% block content %}
+<h1>Round results</h1>
+
+
+<a href={% url "core:judging_round_detail" jround.pk %}>Cancel</a>
+{% endblock %}

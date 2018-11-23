@@ -16,4 +16,5 @@ urlpatterns = [
     url(r'^judge_responses/', include('core.urls.judge_response_urls')),
     url(r'^results/', login_required(rest.RoundResultView.get)),
     url(r'^forms/', include('core.urls.form_urls')),
+    url(r'^round_results/', include('core.urls.results_urls')),
 ]
