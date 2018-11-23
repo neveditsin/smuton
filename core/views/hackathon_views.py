@@ -63,36 +63,13 @@ class HackathonDetailView(DetailView):
     slug_url_kwarg = 'slug'
     pk_url_kwarg = 'pk'
 
-    def __init__(self, **kwargs):
-        return super(HackathonDetailView, self).__init__(**kwargs)
-
-    def dispatch(self, *args, **kwargs):
-        return super(HackathonDetailView, self).dispatch(*args, **kwargs)
-
     def get(self, request, *args, **kwargs):
         return super(HackathonDetailView, self).get(request, *args, **kwargs)
 
-    def get_object(self, queryset=None):
-        return super(HackathonDetailView, self).get_object(queryset)
 
-    def get_queryset(self):
-        return super(HackathonDetailView, self).get_queryset()
 
-    def get_slug_field(self):
-        return super(HackathonDetailView, self).get_slug_field()
 
-    def get_context_data(self, **kwargs):
-        ret = super(HackathonDetailView, self).get_context_data(**kwargs)
-        return ret
 
-    def get_context_object_name(self, obj):
-        return super(HackathonDetailView, self).get_context_object_name(obj)
-
-    def render_to_response(self, context, **response_kwargs):
-        return super(HackathonDetailView, self).render_to_response(context, **response_kwargs)
-
-    def get_template_names(self):
-        return super(HackathonDetailView, self).get_template_names()
 
 
 class HackathonCreateView(CreateView):
@@ -102,11 +79,6 @@ class HackathonCreateView(CreateView):
     template_name = "core/hackathon_create.html"
     success_url = reverse_lazy("hackathon_list")
 
-    def __init__(self, **kwargs):
-        return super(HackathonCreateView, self).__init__(**kwargs)
-
-    def dispatch(self, request, *args, **kwargs):
-        return super(HackathonCreateView, self).dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         return super(HackathonCreateView, self).get(request, *args, **kwargs)
@@ -114,20 +86,6 @@ class HackathonCreateView(CreateView):
     def post(self, request, *args, **kwargs):
         return super(HackathonCreateView, self).post(request, *args, **kwargs)
 
-    def get_form_class(self):
-        return super(HackathonCreateView, self).get_form_class()
-
-    def get_form(self, form_class=None):
-        return super(HackathonCreateView, self).get_form(form_class)
-
-    def get_form_kwargs(self, **kwargs):
-        return super(HackathonCreateView, self).get_form_kwargs(**kwargs)
-
-    def get_initial(self):
-        return super(HackathonCreateView, self).get_initial()
-
-    def form_invalid(self, form):
-        return super(HackathonCreateView, self).form_invalid(form)
 
     def form_valid(self, form):
         obj = form.save(commit=False)
@@ -137,12 +95,6 @@ class HackathonCreateView(CreateView):
     def get_context_data(self, **kwargs):
         ret = super(HackathonCreateView, self).get_context_data(**kwargs)
         return ret
-
-    def render_to_response(self, context, **response_kwargs):
-        return super(HackathonCreateView, self).render_to_response(context, **response_kwargs)
-
-    def get_template_names(self):
-        return super(HackathonCreateView, self).get_template_names()
 
     def get_success_url(self):
         return reverse("core:hackathon_detail", args=(self.object.pk,))
@@ -159,11 +111,6 @@ class HackathonUpdateView(UpdateView):
     pk_url_kwarg = 'pk'
     context_object_name = "hackathon"
 
-    def __init__(self, **kwargs):
-        return super(HackathonUpdateView, self).__init__(**kwargs)
-
-    def dispatch(self, *args, **kwargs):
-        return super(HackathonUpdateView, self).dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         return super(HackathonUpdateView, self).get(request, *args, **kwargs)
@@ -171,47 +118,15 @@ class HackathonUpdateView(UpdateView):
     def post(self, request, *args, **kwargs):
         return super(HackathonUpdateView, self).post(request, *args, **kwargs)
 
-    def get_object(self, queryset=None):
-        return super(HackathonUpdateView, self).get_object(queryset)
-
-    def get_queryset(self):
-        return super(HackathonUpdateView, self).get_queryset()
-
-    def get_slug_field(self):
-        return super(HackathonUpdateView, self).get_slug_field()
-
-    def get_form_class(self):
-        return super(HackathonUpdateView, self).get_form_class()
-
-    def get_form(self, form_class=None):
-        return super(HackathonUpdateView, self).get_form(form_class)
-
     def get_form_kwargs(self, **kwargs):
         return super(HackathonUpdateView, self).get_form_kwargs(**kwargs)
 
-    def get_initial(self):
-        return super(HackathonUpdateView, self).get_initial()
-
-    def form_invalid(self, form):
-        return super(HackathonUpdateView, self).form_invalid(form)
 
     def form_valid(self, form):
         obj = form.save(commit=False)
         obj.save()
         return super(HackathonUpdateView, self).form_valid(form)
 
-    def get_context_data(self, **kwargs):
-        ret = super(HackathonUpdateView, self).get_context_data(**kwargs)
-        return ret
-
-    def get_context_object_name(self, obj):
-        return super(HackathonUpdateView, self).get_context_object_name(obj)
-
-    def render_to_response(self, context, **response_kwargs):
-        return super(HackathonUpdateView, self).render_to_response(context, **response_kwargs)
-
-    def get_template_names(self):
-        return super(HackathonUpdateView, self).get_template_names()
 
     def get_success_url(self):
         return reverse("core:hackathon_detail", args=(self.object.pk,))
@@ -219,17 +134,11 @@ class HackathonUpdateView(UpdateView):
 
 class HackathonDeleteView(DeleteView):
     model = Hackathon
-    template_name = "core/hackathon_delete.html"
     slug_field = 'slug'
     slug_url_kwarg = 'slug'
     pk_url_kwarg = 'pk'
     context_object_name = "hackathon"
 
-    def __init__(self, **kwargs):
-        return super(HackathonDeleteView, self).__init__(**kwargs)
-
-    def dispatch(self, *args, **kwargs):
-        return super(HackathonDeleteView, self).dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         raise Http404
@@ -239,28 +148,6 @@ class HackathonDeleteView(DeleteView):
 
     def delete(self, request, *args, **kwargs):
         return super(HackathonDeleteView, self).delete(request, *args, **kwargs)
-
-    def get_object(self, queryset=None):
-        return super(HackathonDeleteView, self).get_object(queryset)
-
-    def get_queryset(self):
-        return super(HackathonDeleteView, self).get_queryset()
-
-    def get_slug_field(self):
-        return super(HackathonDeleteView, self).get_slug_field()
-
-    def get_context_data(self, **kwargs):
-        ret = super(HackathonDeleteView, self).get_context_data(**kwargs)
-        return ret
-
-    def get_context_object_name(self, obj):
-        return super(HackathonDeleteView, self).get_context_object_name(obj)
-
-    def render_to_response(self, context, **response_kwargs):
-        return super(HackathonDeleteView, self).render_to_response(context, **response_kwargs)
-
-    def get_template_names(self):
-        return super(HackathonDeleteView, self).get_template_names()
 
     def get_success_url(self):
         return reverse("core:hackathon_list")
