@@ -28,7 +28,7 @@ class SumbitFormView(TemplateView):
             i+=1
 
         return HttpResponseRedirect(self.get_success_url())
-        return reverse("core:hackathon_list")
+
     
     def load_names(self, file_path):
         reader = csv.DictReader(open(file_path))

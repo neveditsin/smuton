@@ -1,5 +1,6 @@
 from django import forms
 from .models import Judge, Team, Scale, ScaleEntry, Criteria, Hackathon, JudgingRound, JudgeResponse
+from _mysql import NULL
 
 
 class JudgeForm(forms.ModelForm):
@@ -283,55 +284,29 @@ class JudgingRoundForm(forms.ModelForm):
         return super(JudgingRoundForm, self).save(commit)
 
 
-class JudgeResponseForm(forms.ModelForm):
-
-    class Meta:
-        model = JudgeResponse
-        fields = ['round', 'judge', 'team', 'criterion', 'mark']
-        exclude = []
-        widgets = None
-        localized_fields = None
-        labels = {}
-        help_texts = {}
-        error_messages = {}
-
-    def __init__(self, *args, **kwargs):
-        return super(JudgeResponseForm, self).__init__(*args, **kwargs)
-
-    def is_valid(self):
-        return super(JudgeResponseForm, self).is_valid()
-
-    def full_clean(self):
-        return super(JudgeResponseForm, self).full_clean()
-
-    def clean_round(self):
-        round = self.cleaned_data.get("round", None)
-        return round
-
-    def clean_judge(self):
-        judge = self.cleaned_data.get("judge", None)
-        return judge
-
-    def clean_team(self):
-        team = self.cleaned_data.get("team", None)
-        return team
-
-    def clean_criterion(self):
-        criterion = self.cleaned_data.get("criterion", None)
-        return criterion
-
-    def clean_mark(self):
-        mark = self.cleaned_data.get("mark", None)
-        return mark
-
-    def clean(self):
-        return super(JudgeResponseForm, self).clean()
-
-    def validate_unique(self):
-        return super(JudgeResponseForm, self).validate_unique()
-
-    def save(self, commit=True):
-        return super(JudgeResponseForm, self).save(commit)
-   
+from django.utils.safestring import mark_safe
+class HorizontalRadioRenderer(forms.RadioSelect):
+    def render(self):
+        return mark_safe(u'\n'.join([u'%s\n' % w for w in self]))
+ 
 
 
+
+class JudgeResponseFormHead(forms.Form):
+    def __init__(self, jround, *args, **kwargs):
+        super(JudgeResponseFormHead, self).__init__(*args, **kwargs)
+        self.jround = jround
+        self.fields['judge'] = forms.ModelChoiceField(queryset=Judge.objects.filter(hackathon = self.jround.hackathon), \
+                                                     widget=forms.RadioSelect(), label = "Judge", \
+                                                     required=True, empty_label = None)
+        self.fields['team'] = forms.ModelChoiceField(queryset=Team.objects.filter(hackathon = self.jround.hackathon), \
+                                                     widget=forms.RadioSelect(), label = "Team", \
+                                                     required=True, empty_label = None) 
+
+class JudgeResponseForm(forms.Form):
+    def __init__(self, criteria, *args, **kwargs):
+        super(JudgeResponseForm, self).__init__(*args, **kwargs)
+        self.criteria = criteria
+        self.fields['mark'] = forms.ModelChoiceField(queryset=ScaleEntry.objects.filter(scale = self.criteria.scale), \
+                                                     widget=forms.RadioSelect(), label = criteria.name, \
+                                                     required=True, empty_label = None)  

@@ -1,16 +1,20 @@
 {% extends "core/judge_response_base.html" %}
 
 {% block title %}
-    Create JudgeResponse
+    Create Judge Response
 {% endblock %}
 
 {% block content %}
-<h1><a href={% url "core:judge_response_list" %}>JudgeResponse</a></h1>
+<h1><a href={% url "core:judge_response_list" %}>Judging Form</a></h1>
 <h2>Create JudgeResponse</h2>
 
 <form action="" method="post">{% csrf_token %}
-    {{ form.as_p }}
+    {{head_form.as_p}}
+    {{ formset.management_form }}
+    {% for form in forms %}
+		{{ form.as_p }}
+    {% endfor %}
     <input type="submit" value="Create" />
 </form>
-<a href={% url "core:judge_response_list" %}>Cancel</a>
+<a href={% url "core:judging_round_detail" jround.pk %}>Cancel</a>
 {% endblock %}
