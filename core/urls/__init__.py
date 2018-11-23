@@ -1,5 +1,4 @@
 from django.conf.urls import include, url
-from ..views import rest
 from django.contrib.auth.decorators import login_required
 
 app_name="core"
@@ -14,7 +13,6 @@ urlpatterns = [
     url(r'^hackathons/', include('core.urls.hackathon_urls')),
     url(r'^judging_rounds/', include('core.urls.judging_round_urls')),
     url(r'^judge_responses/', include('core.urls.judge_response_urls')),
-    url(r'^results/', login_required(rest.RoundResultView.get)),
     url(r'^forms/', include('core.urls.form_urls')),
     url(r'^round_results/', include('core.urls.results_urls')),
 ]

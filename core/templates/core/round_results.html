@@ -7,6 +7,13 @@
 {% block content %}
 <h1>Round results</h1>
 
+<div>
+{{result|linebreaksbr}}
+</div>
 
-<a href={% url "core:judging_round_detail" jround.pk %}>Cancel</a>
+
+<a href={% url "core:judging_round_detail" jround.pk %}>Go back</a>
 {% endblock %}
+
+
+

@@ -10,7 +10,7 @@ class Agg:
             values('hack_id', 'round_no', 'judge_id', 'team_name', 'team_id', 'critera', 'mark_weight'))
         
 
-        
+
         jtm = df[['judge_id', 'team_id', 'mark_weight']];
 
 
@@ -79,5 +79,6 @@ class Agg:
         
         print("t_W_AM:")
         print(t_W_AM)  
+        return t_W_AM
         
         

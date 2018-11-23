@@ -4,8 +4,8 @@ from django.views.generic import TemplateView
 from ..models import Criteria, Scale, JudgingRound
 from django.urls import reverse
 from django.http import HttpResponseRedirect
-
-
+from core.models import Responses
+from core.utils.aggregator import Agg
         
 class RoundResultsView(TemplateView):
     template_name = "core/round_results.html"
@@ -16,7 +16,9 @@ class RoundResultsView(TemplateView):
 
     def get_context_data(self, *args, **kwargs):        
         ret = super(RoundResultsView, self).get_context_data(*args, **kwargs)
-        ret['jround'] = self.jr
+        result = Agg.aggregate(Responses, self.jr.hackathon.pk, self.jr.number, 'sum')        
+        ret['jround'] = self.jr 
+        ret['result'] = str(result)
         return ret
     
         
