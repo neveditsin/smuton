@@ -128,8 +128,8 @@ class ScaleEntryForm(forms.ModelForm):
 
     class Meta:
         model = ScaleEntry
-        fields = ['entry', 'weight', 'scale']
-        exclude = []
+        fields = ['entry', 'weight']
+        exclude = ['scale']
         widgets = None
         localized_fields = None
         labels = {}
@@ -152,10 +152,6 @@ class ScaleEntryForm(forms.ModelForm):
     def clean_weight(self):
         weight = self.cleaned_data.get("weight", None)
         return weight
-
-    def clean_scale(self):
-        scale = self.cleaned_data.get("scale", None)
-        return scale
 
     def clean(self):
         return super(ScaleEntryForm, self).clean()

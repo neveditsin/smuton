@@ -17,12 +17,6 @@ class ScaleListView(ListView):
     page_kwarg = 'page'
     paginate_orphans = 0
 
-    def __init__(self, **kwargs):
-        return super(ScaleListView, self).__init__(**kwargs)
-
-    def dispatch(self, *args, **kwargs):
-        return super(ScaleListView, self).dispatch(*args, **kwargs)
-
     def get(self, request, *args, **kwargs):
         return super(ScaleListView, self).get(request, *args, **kwargs)
 
@@ -48,11 +42,6 @@ class ScaleListView(ListView):
     def get_paginator(self, queryset, per_page, orphans=0, allow_empty_first_page=True):
         return super(ScaleListView, self).get_paginator(queryset, per_page, orphans=0, allow_empty_first_page=True)
 
-    def render_to_response(self, context, **response_kwargs):
-        return super(ScaleListView, self).render_to_response(context, **response_kwargs)
-
-    def get_template_names(self):
-        return super(ScaleListView, self).get_template_names()
 
 
 class ScaleDetailView(DetailView):
@@ -63,36 +52,16 @@ class ScaleDetailView(DetailView):
     slug_url_kwarg = 'slug'
     pk_url_kwarg = 'pk'
 
-    def __init__(self, **kwargs):
-        return super(ScaleDetailView, self).__init__(**kwargs)
-
-    def dispatch(self, *args, **kwargs):
-        return super(ScaleDetailView, self).dispatch(*args, **kwargs)
-
+   
     def get(self, request, *args, **kwargs):
         return super(ScaleDetailView, self).get(request, *args, **kwargs)
-
-    def get_object(self, queryset=None):
-        return super(ScaleDetailView, self).get_object(queryset)
 
     def get_queryset(self):
         return super(ScaleDetailView, self).get_queryset()
 
-    def get_slug_field(self):
-        return super(ScaleDetailView, self).get_slug_field()
-
     def get_context_data(self, **kwargs):
         ret = super(ScaleDetailView, self).get_context_data(**kwargs)
         return ret
-
-    def get_context_object_name(self, obj):
-        return super(ScaleDetailView, self).get_context_object_name(obj)
-
-    def render_to_response(self, context, **response_kwargs):
-        return super(ScaleDetailView, self).render_to_response(context, **response_kwargs)
-
-    def get_template_names(self):
-        return super(ScaleDetailView, self).get_template_names()
 
 
 class ScaleCreateView(CreateView):
@@ -102,29 +71,12 @@ class ScaleCreateView(CreateView):
     template_name = "core/scale_create.html"
     success_url = reverse_lazy("scale_list")
 
-    def __init__(self, **kwargs):
-        return super(ScaleCreateView, self).__init__(**kwargs)
-
-    def dispatch(self, request, *args, **kwargs):
-        return super(ScaleCreateView, self).dispatch(request, *args, **kwargs)
-
+  
     def get(self, request, *args, **kwargs):
         return super(ScaleCreateView, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         return super(ScaleCreateView, self).post(request, *args, **kwargs)
-
-    def get_form_class(self):
-        return super(ScaleCreateView, self).get_form_class()
-
-    def get_form(self, form_class=None):
-        return super(ScaleCreateView, self).get_form(form_class)
-
-    def get_form_kwargs(self, **kwargs):
-        return super(ScaleCreateView, self).get_form_kwargs(**kwargs)
-
-    def get_initial(self):
-        return super(ScaleCreateView, self).get_initial()
 
     def form_invalid(self, form):
         return super(ScaleCreateView, self).form_invalid(form)
@@ -138,14 +90,8 @@ class ScaleCreateView(CreateView):
         ret = super(ScaleCreateView, self).get_context_data(**kwargs)
         return ret
 
-    def render_to_response(self, context, **response_kwargs):
-        return super(ScaleCreateView, self).render_to_response(context, **response_kwargs)
-
-    def get_template_names(self):
-        return super(ScaleCreateView, self).get_template_names()
-
     def get_success_url(self):
-        return reverse("core:scale_detail", args=(self.object.pk,))
+        return reverse("core:scale_list")
 
 
 class ScaleUpdateView(UpdateView):
@@ -159,12 +105,6 @@ class ScaleUpdateView(UpdateView):
     pk_url_kwarg = 'pk'
     context_object_name = "scale"
 
-    def __init__(self, **kwargs):
-        return super(ScaleUpdateView, self).__init__(**kwargs)
-
-    def dispatch(self, *args, **kwargs):
-        return super(ScaleUpdateView, self).dispatch(*args, **kwargs)
-
     def get(self, request, *args, **kwargs):
         return super(ScaleUpdateView, self).get(request, *args, **kwargs)
 
@@ -177,23 +117,9 @@ class ScaleUpdateView(UpdateView):
     def get_queryset(self):
         return super(ScaleUpdateView, self).get_queryset()
 
-    def get_slug_field(self):
-        return super(ScaleUpdateView, self).get_slug_field()
-
-    def get_form_class(self):
-        return super(ScaleUpdateView, self).get_form_class()
-
     def get_form(self, form_class=None):
         return super(ScaleUpdateView, self).get_form(form_class)
 
-    def get_form_kwargs(self, **kwargs):
-        return super(ScaleUpdateView, self).get_form_kwargs(**kwargs)
-
-    def get_initial(self):
-        return super(ScaleUpdateView, self).get_initial()
-
-    def form_invalid(self, form):
-        return super(ScaleUpdateView, self).form_invalid(form)
 
     def form_valid(self, form):
         obj = form.save(commit=False)
@@ -204,32 +130,17 @@ class ScaleUpdateView(UpdateView):
         ret = super(ScaleUpdateView, self).get_context_data(**kwargs)
         return ret
 
-    def get_context_object_name(self, obj):
-        return super(ScaleUpdateView, self).get_context_object_name(obj)
-
-    def render_to_response(self, context, **response_kwargs):
-        return super(ScaleUpdateView, self).render_to_response(context, **response_kwargs)
-
-    def get_template_names(self):
-        return super(ScaleUpdateView, self).get_template_names()
-
     def get_success_url(self):
-        return reverse("core:scale_detail", args=(self.object.pk,))
+        return reverse("core:scale_list")
 
 
 class ScaleDeleteView(DeleteView):
     model = Scale
-    template_name = "core/scale_delete.html"
     slug_field = 'slug'
     slug_url_kwarg = 'slug'
     pk_url_kwarg = 'pk'
     context_object_name = "scale"
 
-    def __init__(self, **kwargs):
-        return super(ScaleDeleteView, self).__init__(**kwargs)
-
-    def dispatch(self, *args, **kwargs):
-        return super(ScaleDeleteView, self).dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         raise Http404
@@ -240,27 +151,6 @@ class ScaleDeleteView(DeleteView):
     def delete(self, request, *args, **kwargs):
         return super(ScaleDeleteView, self).delete(request, *args, **kwargs)
 
-    def get_object(self, queryset=None):
-        return super(ScaleDeleteView, self).get_object(queryset)
-
-    def get_queryset(self):
-        return super(ScaleDeleteView, self).get_queryset()
-
-    def get_slug_field(self):
-        return super(ScaleDeleteView, self).get_slug_field()
-
-    def get_context_data(self, **kwargs):
-        ret = super(ScaleDeleteView, self).get_context_data(**kwargs)
-        return ret
-
-    def get_context_object_name(self, obj):
-        return super(ScaleDeleteView, self).get_context_object_name(obj)
-
-    def render_to_response(self, context, **response_kwargs):
-        return super(ScaleDeleteView, self).render_to_response(context, **response_kwargs)
-
-    def get_template_names(self):
-        return super(ScaleDeleteView, self).get_template_names()
 
     def get_success_url(self):
         return reverse("core:scale_list")

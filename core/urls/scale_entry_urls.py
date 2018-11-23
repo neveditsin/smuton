@@ -1,11 +1,11 @@
 from django.conf.urls import url
-from ..views import (ScaleEntryListView, ScaleEntryCreateView, ScaleEntryDetailView,
+from ..views import (ScaleEntryListView, ScaleEntryCreateView, 
                      ScaleEntryUpdateView, ScaleEntryDeleteView)
 from django.contrib.auth.decorators import login_required
 
 
 urlpatterns = [
-    url(r'^create/$',  # NOQA
+    url(r'^create/(?P<scale_id>\d+)/$',  # NOQA
         login_required(ScaleEntryCreateView.as_view()),
         name="scale_entry_create"),
 
@@ -17,11 +17,8 @@ urlpatterns = [
         login_required(ScaleEntryDeleteView.as_view()),
         name="scale_entry_delete"),
 
-    url(r'^(?P<pk>\d+)/$',
-        ScaleEntryDetailView.as_view(),
-        name="scale_entry_detail"),
 
-    url(r'^$',
+    url(r'^(?P<scale_id>\d+)/$',
         ScaleEntryListView.as_view(),
         name="scale_entry_list"),
 ]

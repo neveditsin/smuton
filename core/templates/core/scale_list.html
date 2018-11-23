@@ -9,7 +9,7 @@
     <h2><a href={% url "core:scale_create" %}>Create new Scale</a></h2>
     <ul>
     {% for scale in scale_list %}
-        <li><a href={% url "core:scale_detail" scale.pk %}>{{ scale }}</a> | <a href={% url "core:scale_update" scale.pk %}>Update</a> | <form style="display:inline;" action={% url "core:scale_delete" scale.pk %} method="post" onsubmit="return confirm('Are you sure you want to delete {{ scale }}?')">{% csrf_token %}
+        <li><a>{{ scale }}</a> | <a href={% url "core:scale_entry_list" scale.pk %}>Entries</a> | <a href={% url "core:scale_update" scale.pk %}>Update</a> | <form style="display:inline;" action={% url "core:scale_delete" scale.pk %} method="post" onsubmit="return confirm('Are you sure you want to delete {{ scale }}?')">{% csrf_token %}
     <input type="submit" value="Delete" />
     </form></li>
     {% empty %}

@@ -1,16 +1,15 @@
 {% extends "core/scale_entry_base.html" %}
 
 {% block title %}
-    Create ScaleEntry
+    Create Scale Entry
 {% endblock %}
 
 {% block content %}
-<h1><a href={% url "core:scale_entry_list" %}>ScaleEntry</a></h1>
-<h2>Create ScaleEntry</h2>
+<h2>Create Scale Entry: <a href={% url "core:scale_entry_list" scale.pk %}>{{scale}}</a></h2>
 
 <form action="" method="post">{% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="Create" />
 </form>
-<a href={% url "core:scale_entry_list" %}>Cancel</a>
+<a href={% url "core:scale_entry_list" scale.pk %}>Cancel</a>
 {% endblock %}

@@ -1,19 +1,19 @@
 {% extends "core/scale_entry_base.html" %}
 
 {% block title %}
-    ScaleEntrys
+    Scale Entries
 {% endblock %}
 
 {% block content %}
-    <h1>ScaleEntrys</h1>
-    <h2><a href={% url "core:scale_entry_create" %}>Create new ScaleEntry</a></h2>
+    <h1>Scale Entries (<a href={% url "core:scale_list" %}>{{scale}}</a>)</h1>
+    <h2><a href={% url "core:scale_entry_create" scale.pk %}>New Scale Entry</a></h2>
     <ul>
     {% for scale_entry in scale_entry_list %}
-        <li><a href={% url "core:scale_entry_detail" scale_entry.pk %}>{{ scale_entry }}</a> | <a href={% url "core:scale_entry_update" scale_entry.pk %}>Update</a> | <form style="display:inline;" action={% url "core:scale_entry_delete" scale_entry.pk %} method="post" onsubmit="return confirm('Are you sure you want to delete {{ scale_entry }}?')">{% csrf_token %}
+        <li><a>{{ scale_entry }}</a> | <a href={% url "core:scale_entry_update" scale_entry.pk %}>Update</a> | <form style="display:inline;" action={% url "core:scale_entry_delete" scale_entry.pk %} method="post" onsubmit="return confirm('Are you sure you want to delete {{ scale_entry }}?')">{% csrf_token %}
     <input type="submit" value="Delete" />
     </form></li>
     {% empty %}
-        <li>No ScaleEntrys yet.</li>
+        <li>No Scale Entries yet.</li>
     {% endfor %}
     </ul>
 {% endblock %}

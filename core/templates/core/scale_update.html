@@ -12,8 +12,5 @@
     {{ form.as_p }}
     <input type="submit" value="Update" />
 </form>
-<a href={% url "core:scale_detail" scale.pk %}>Cancel</a>
-<form style="display:inline;" action={% url "core:scale_delete" scale.pk %} method="post" onsubmit="return confirm('Are you sure you want to delete {{ scale }}?')">{% csrf_token %}
-    <input type="submit" value="Delete" />
-</form>
+<a href={% url "core:scale_list" %}>Cancel</a>
 {% endblock %}

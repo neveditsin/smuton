@@ -239,11 +239,6 @@ class JudgeDeleteView(DeleteView):
     pk_url_kwarg = 'pk'
     context_object_name = "judge"
 
-    def __init__(self, **kwargs):
-        return super(JudgeDeleteView, self).__init__(**kwargs)
-
-    def dispatch(self, *args, **kwargs):
-        return super(JudgeDeleteView, self).dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         raise Http404
@@ -255,27 +250,9 @@ class JudgeDeleteView(DeleteView):
     def delete(self, request, *args, **kwargs):
         return super(JudgeDeleteView, self).delete(request, *args, **kwargs)
 
-    def get_object(self, queryset=None):
-        return super(JudgeDeleteView, self).get_object(queryset)
-
-    def get_queryset(self):
-        return super(JudgeDeleteView, self).get_queryset()
-
-    def get_slug_field(self):
-        return super(JudgeDeleteView, self).get_slug_field()
-
     def get_context_data(self, **kwargs):
         ret = super(JudgeDeleteView, self).get_context_data(**kwargs)
         return ret
-
-    def get_context_object_name(self, obj):
-        return super(JudgeDeleteView, self).get_context_object_name(obj)
-
-    def render_to_response(self, context, **response_kwargs):
-        return super(JudgeDeleteView, self).render_to_response(context, **response_kwargs)
-
-    def get_template_names(self):
-        return super(JudgeDeleteView, self).get_template_names()
 
     def get_success_url(self):
         return reverse("core:judge_list") + "?hack_id=" + self.hid
