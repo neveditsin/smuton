@@ -40,8 +40,8 @@ if (append_checker!=0){
 }else{
 	append_checker = 1;
 	$('#container').empty();
-	for(var i=0; i < value; i++){
-		var criterion_html = '<div id="items"><font color="#922b21">Criteria '+(i+1)+' :</font><input type="text" name="name'+(i+1)+'" required><br><font color="#922b21">Scale </font><select  id="scale'+(i+1)+'" name="scale'+(i+1)+'">{% for entry in scale %}<option value="{{ entry.pk }}">{{ entry.name }}</option>{% endfor %}</select></div>'
+	for(var i=1; i < value; i++){
+		var criterion_html = '<div id="items" style="margin-left:30px; "><font color="#922b21">Criteria '+(i+1)+' :</font><input type="text" name="name'+(i+1)+'" required><br><font color="#922b21">Scale </font>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<select  id="scale'+(i+1)+'" name="scale'+(i+1)+'">{% for entry in scale %}<option value="{{ entry.pk }}">{{ entry.name }}</option>{% endfor %}</select></div>'
 		$('#container').append(criterion_html);	
 	}
 }	
@@ -64,8 +64,6 @@ if (append_checker!=0){
 
 <div class="w3-container w3-highway-red w3-center">
 <h1>Create a Form</h1>
-
-
 </div>
 <br>
 <br>
@@ -78,24 +76,35 @@ if (append_checker!=0){
   <option value="4">4</option>
   <option value="5">5</option>
 </select>
-</p>
+
 <form action="" method="post">
 {% csrf_token %}
 <br>
 <br>
-<p style="margin-left:30px; ">
-</p>
-<br>
-<br>
-<br>
 
-<div id="container"></div>
-    
+	<div id="items"style="margin-left:30px; ">
+	<font color="#922b21">Criteria 1 :</font><input type="text" name="name1" required>
+	<br>
+	<font color="#922b21">Scale </font>
+	&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<select  id="scale1" name="scale1">
+	{% for entry in scale %}
+	<option value="{{ entry.pk }}">{{ entry.name }}
+	</option>
+	{% endfor %}
+	</select>
+	</div>
+
+	<div id="container"></div>
+
+<br>
+<br>
+<br>    
 <div style="margin-left:30px; ">
 <input type="submit" value="Submit"/>
 </div>
 
 </form>
+</p>
 <br>
 <br>
 <br>
