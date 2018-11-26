@@ -30,7 +30,7 @@ class JudgeResponseListView(TemplateView):
                                          aggfunc='first').to_records())
 
 
-        ret['resps'] = pt.to_html()        
+        ret['resps'] = pt.to_html()
         ret['jround'] = self.jr
         return ret
 

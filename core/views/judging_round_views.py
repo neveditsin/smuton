@@ -1,7 +1,7 @@
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView
 from django.views.generic.list import ListView
-from ..models import JudgingRound, Hackathon
+from ..models import JudgingRound, Hackathon, JudgeResponse
 from ..forms import JudgingRoundForm
 from django.urls import reverse
 from django.http import Http404
@@ -84,7 +84,9 @@ class JudgingRoundDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         ret = super(JudgingRoundDetailView, self).get_context_data(**kwargs)
-        ret['form_created'] = JudgingRound.objects.get(pk = self.kwargs['pk']).criteria.count()
+        jr = JudgingRound.objects.get(pk = self.kwargs['pk'])
+        ret['form_created'] = jr.criteria.count()
+        ret['have_respones'] = JudgeResponse.objects.filter(round = jr).count()
         return ret
 
     def get_context_object_name(self, obj):
