@@ -7,7 +7,7 @@ class Agg:
         df = pd.DataFrame.from_records(resp.objects.\
             filter(hack_id=hid).\
             filter(round_no=rnd).\
-            values('hack_id', 'round_no', 'judge_id', 'team_name', 'team_id', 'critera', 'mark_weight'))
+            values('hack_id', 'round_no', 'judge_id', 'team_name', 'team_id', 'criteria', 'mark_weight'))
         
 
 

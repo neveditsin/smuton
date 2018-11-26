@@ -65,6 +65,14 @@ if (append_checker!=0){
 <div class="w3-container w3-highway-red w3-center">
 <h1>Create a Form</h1>
 </div>
+{% if messages %}
+<ul class="messages">
+  {% for message in messages %}
+  <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+
 <br>
 <br>
 <p style="margin-left:30px; ">

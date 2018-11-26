@@ -6,8 +6,8 @@ from django.views.generic import TemplateView
 from ..models import Criteria, Scale, JudgingRound
 from django.urls import reverse
 from django.http import HttpResponseRedirect
-
-
+from django.db import IntegrityError
+from django.contrib import messages
         
 class SumbitFormView(TemplateView):
     template_name = "core/form_create.html"
@@ -16,17 +16,19 @@ class SumbitFormView(TemplateView):
         p = request.POST
         i = 1 #start from name1, scale1
         while 'name'+str(i) in p:
-            name = p['name'+str(i)]
-            scale = p['scale'+str(i)]
-            #TODO: now we update if already have it in DB. Need to throw an error    
-            crit, created = Criteria.objects.update_or_create(
-                name = name,
-                scale = Scale.objects.get(pk=scale)
-                )
-            print(created)
-            JudgingRound.objects.get(pk=self.kwargs['jround_id']).criteria.add(crit)
-            i+=1
-
+            try:  
+                name = p['name'+str(i)]
+                scale = p['scale'+str(i)] 
+                crit = Criteria.objects.create(
+                    name = name,
+                    scale = Scale.objects.get(pk=scale)
+                    )
+                JudgingRound.objects.get(pk=self.kwargs['jround_id']).criteria.add(crit)
+                i+=1
+            except IntegrityError:
+                messages.error(request, "Criteria with name '" + name + "' alredy exists")
+                return HttpResponseRedirect(request.path)
+        
         return HttpResponseRedirect(self.get_success_url())
 
     

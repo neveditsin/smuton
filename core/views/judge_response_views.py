@@ -1,63 +1,39 @@
 from django.views.generic import TemplateView, DeleteView
-from django.views.generic.list import ListView
-from ..models import JudgeResponse, JudgingRound
+from ..models import JudgeResponse, JudgingRound, Responses
 from ..forms import JudgeResponseForm, JudgeResponseFormHead
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.http import HttpResponse
 from django.db import IntegrityError
 from django.contrib import messages
+import pandas as pd
 
-class JudgeResponseListView(ListView):
-    model = JudgeResponse
+
+class JudgeResponseListView(TemplateView):
     template_name = "core/judge_response_list.html"
-    paginate_by = 20
-    context_object_name = "judge_response_list"
-    allow_empty = True
-    page_kwarg = 'page'
-    paginate_orphans = 0
-
-    def __init__(self, **kwargs):
-        return super(JudgeResponseListView, self).__init__(**kwargs)
-
-    def dispatch(self, *args, **kwargs):
-        return super(JudgeResponseListView, self).dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         self.jr = JudgingRound.objects.get(pk=kwargs['jround_id']) 
         return super(JudgeResponseListView, self).get(request, *args, **kwargs)
 
-    def get_queryset(self):
-        return JudgeResponse.objects.filter(
-                round = self.jr
-                )
-    
 
-    def get_allow_empty(self):
-        return super(JudgeResponseListView, self).get_allow_empty()
 
     def get_context_data(self, *args, **kwargs):
         ret = super(JudgeResponseListView, self).get_context_data(*args, **kwargs)
+        df = pd.DataFrame.from_records(Responses.objects.\
+            filter(round_id=self.jr.pk).\
+            values('judge_name', 'team_name', 'criteria', 'mark'))
+        
+        pt = pd.DataFrame(df.pivot_table(index=['judge_name', 'team_name'], 
+                                         columns='criteria', 
+                                         values='mark', 
+                                         aggfunc='first').to_records())
+
+
+        ret['resps'] = pt.to_html()        
         ret['jround'] = self.jr
         return ret
 
-    def get_paginate_by(self, queryset):
-        return super(JudgeResponseListView, self).get_paginate_by(queryset)
-
-    def get_context_object_name(self, object_list):
-        return super(JudgeResponseListView, self).get_context_object_name(object_list)
-
-    def paginate_queryset(self, queryset, page_size):
-        return super(JudgeResponseListView, self).paginate_queryset(queryset, page_size)
-
-    def get_paginator(self, queryset, per_page, orphans=0, allow_empty_first_page=True):
-        return super(JudgeResponseListView, self).get_paginator(queryset, per_page, orphans=0, allow_empty_first_page=True)
-
-    def render_to_response(self, context, **response_kwargs):
-        return super(JudgeResponseListView, self).render_to_response(context, **response_kwargs)
-
-    def get_template_names(self):
-        return super(JudgeResponseListView, self).get_template_names()
 
 
 class JudgeResponseLanding(TemplateView):

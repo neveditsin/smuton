@@ -82,9 +82,11 @@ class Responses(models.Model):
     round_id = models.IntegerField(verbose_name="RID")
     judge_id = models.IntegerField(verbose_name="Judge")
     team_name = models.CharField(max_length=128, verbose_name="Team Name")
+    judge_name = models.CharField(max_length=128, verbose_name="Judge Name")
     team_id = models.IntegerField(verbose_name="Team Id")
-    critera = models.CharField(max_length=256, verbose_name="Criteria Name")
+    criteria = models.CharField(max_length=256, verbose_name="Criteria Name")
     mark_weight = models.IntegerField(verbose_name="Weight")
+    mark = models.CharField(max_length=256, verbose_name="Mark")
     class Meta:
         managed = False
         db_table = 'core_resonses_vw'

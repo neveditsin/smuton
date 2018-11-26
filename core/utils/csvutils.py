@@ -54,8 +54,7 @@ def load_into_model(j_round, override_flag, dataset):
                 mark= r_mark,
                 )    
 
-def pivot(DataFrame):
-    return DataFrame.pivot_table(index=['judge_id', 'team_id'], columns='criterion_id', values='mark_id')
+
 
 def unpivot(DataFrame):       
 

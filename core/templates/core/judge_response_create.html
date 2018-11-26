@@ -10,6 +10,14 @@
 <div style="margin-left:30px;">
 <h2>Create Judge Response</h2>
 
+{% if messages %}
+<ul class="messages">
+  {% for message in messages %}
+  <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+
 <form action="" method="post">{% csrf_token %}
     {{head_form.as_p}}
 
