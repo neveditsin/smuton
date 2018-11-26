@@ -41,7 +41,7 @@ if (append_checker!=0){
 	append_checker = 1;
 	$('#container').empty();
 	for(var i=1; i < value; i++){
-		var criterion_html = '<div id="items" style="margin-left:30px; "><font color="#922b21">Criteria '+(i+1)+' :</font><input type="text" name="name'+(i+1)+'" required><br><font color="#922b21">Scale </font>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<select  id="scale'+(i+1)+'" name="scale'+(i+1)+'">{% for entry in scale %}<option value="{{ entry.pk }}">{{ entry.name }}</option>{% endfor %}</select></div>'
+		var criterion_html = '<br><div id="items" style="margin-left:30px; "><font color="#922b21">Criteria '+(i+1)+' :</font><input type="text" name="name'+(i+1)+'" required><br><font color="#922b21">Scale </font>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<select  id="scale'+(i+1)+'" name="scale'+(i+1)+'">{% for entry in scale %}<option value="{{ entry.pk }}">{{ entry.name }}</option>{% endfor %}</select></div>'
 		$('#container').append(criterion_html);	
 	}
 }	

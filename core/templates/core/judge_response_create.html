@@ -1,26 +1,22 @@
-{% extends "core/judge_response_base.html" %}
 
-{% block title %}
-    Create Judge Response
-{% endblock %}
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
+<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-colors-highway.css" />
+<link rel="stylesheet" type="text/css" href="/static/css/mystyle.css" /> 
 
-{% block content %}
+<div class="w3-container w3-highway-red w3-center">
 <h1>Judging Form</h1>
+</div>
+
+<div style="margin-left:30px;">
 <h2>Create Judge Response</h2>
-{% if messages %}
-<ul class="messages">
-  {% for message in messages %}
-  <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-  {% endfor %}
-</ul>
-{% endif %}
 
 <form action="" method="post">{% csrf_token %}
     {{head_form.as_p}}
+
     {% for form in forms %}
 		{{ form.as_p }}
     {% endfor %}
     <input type="submit" value="Create" />
 </form>
 <a href={% url "core:judging_round_detail" jround.pk %}>Cancel</a>
-{% endblock %}
+</div>
