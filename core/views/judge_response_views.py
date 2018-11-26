@@ -5,6 +5,8 @@ from ..forms import JudgeResponseForm, JudgeResponseFormHead
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.http import HttpResponse
+from django.db import IntegrityError
+from django.contrib import messages
 
 class JudgeResponseListView(ListView):
     model = JudgeResponse
@@ -73,8 +75,6 @@ class JudgeResponseLanding(TemplateView):
 class JudgeResponseCreateView(TemplateView):
     template_name = "core/judge_response_create.html"
        
-    def __init__(self, **kwargs):
-        return super(JudgeResponseCreateView, self).__init__(**kwargs)
 
     def get(self, request, *args, **kwargs):
         self.jr = JudgingRound.objects.get(pk=kwargs['jround_id']) 
@@ -88,19 +88,29 @@ class JudgeResponseCreateView(TemplateView):
         jr = JudgingRound.objects.get(pk=kwargs['jround_id']) 
         judge_team = JudgeResponseFormHead(jr,request.POST)
         if judge_team.is_valid():
+            post_judge = judge_team.cleaned_data['judge']
+            post_team = judge_team.cleaned_data['team']
+        else:
+            return HttpResponse(status=500)
+        #existing_resps = JudgeResponse.objects.filter(round = jr, judge=post_judge)
+        #print(existing_resps)
+        try:
             for cr in jr.criteria.all():
                 mark = JudgeResponseForm(cr, request.POST, prefix=cr.pk)
                 if mark.is_valid():      
                     JudgeResponse.objects.create(
                         round = jr,
-                        team = judge_team.cleaned_data['team'],
-                        judge = judge_team.cleaned_data['judge'],
+                        team = post_team,
+                        judge = post_judge,
                         criterion = cr,
                         mark = mark.cleaned_data['mark'],
                         )
                 else:
                     return HttpResponse(status=500)
-                
+        except IntegrityError:
+            messages.error(request, "You have already submitted a response for team " + str(post_team))
+            return HttpResponseRedirect(request.path)
+                    
         return HttpResponseRedirect(self.get_success_url())
 
 
