@@ -12,8 +12,5 @@
     {{ form.as_p }}
     <input type="submit" value="Update" />
 </form>
-<a href={% url "core:judge_detail" judge.pk %}?hack_id={{hackathon.pk}}>Cancel</a>
-<form style="display:inline;" action={% url "core:judge_delete" judge.pk %}?hack_id={{hackathon.pk}} method="post" onsubmit="return confirm('Are you sure you want to delete {{ judge }}?')">{% csrf_token %}
-    <input type="submit" value="Delete" />
-</form>
+<a href={% url "core:judge_list" %}?hack_id={{hackathon.pk}}>Cancel</a>
 {% endblock %}

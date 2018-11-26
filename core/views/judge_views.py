@@ -1,4 +1,3 @@
-from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from ..models import Judge, Hackathon
@@ -16,12 +15,6 @@ class JudgeListView(ListView):
     allow_empty = True
     page_kwarg = 'page'
     paginate_orphans = 0
-
-    def __init__(self, **kwargs):
-        return super(JudgeListView, self).__init__(**kwargs)
-
-    def dispatch(self, *args, **kwargs):
-        return super(JudgeListView, self).dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         self.hid = request.GET.get('hack_id', '0')
@@ -62,60 +55,11 @@ class JudgeListView(ListView):
         return super(JudgeListView, self).get_template_names()
 
 
-class JudgeDetailView(DetailView):
-    model = Judge
-    template_name = "core/judge_detail.html"
-    context_object_name = "judge"
-    slug_field = 'slug'
-    slug_url_kwarg = 'slug'
-    pk_url_kwarg = 'pk'
-
-    def __init__(self, **kwargs):
-        return super(JudgeDetailView, self).__init__(**kwargs)
-
-    def dispatch(self, *args, **kwargs):
-        return super(JudgeDetailView, self).dispatch(*args, **kwargs)
-
-    def get(self, request, *args, **kwargs):
-        self.hid = request.GET.get('hack_id', '0')
-        return super(JudgeDetailView, self).get(request, *args, **kwargs)
-
-    def get_object(self, queryset=None):
-        return super(JudgeDetailView, self).get_object(queryset)
-
-    def get_queryset(self):
-        return super(JudgeDetailView, self).get_queryset()
-
-    def get_slug_field(self):
-        return super(JudgeDetailView, self).get_slug_field()
-
-    def get_context_data(self, **kwargs):
-        ret = super(JudgeDetailView, self).get_context_data(**kwargs)
-        ret['hackathon'] = Hackathon.objects.get(pk=self.hid)
-        return ret
-
-    def get_context_object_name(self, obj):
-        return super(JudgeDetailView, self).get_context_object_name(obj)
-
-    def render_to_response(self, context, **response_kwargs):
-        return super(JudgeDetailView, self).render_to_response(context, **response_kwargs)
-
-    def get_template_names(self):
-        return super(JudgeDetailView, self).get_template_names()
-
-
 class JudgeCreateView(CreateView):
     model = Judge
     form_class = JudgeForm
-    # fields = ['first_name', 'last_name', 'email']
     template_name = "core/judge_create.html"
-    #success_url = reverse_lazy("judge_list")
 
-    def __init__(self, **kwargs):
-        return super(JudgeCreateView, self).__init__(**kwargs)
-
-    def dispatch(self, request, *args, **kwargs):
-        return super(JudgeCreateView, self).dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         return super(JudgeCreateView, self).get(request, *args, **kwargs)
@@ -150,12 +94,6 @@ class JudgeCreateView(CreateView):
         ret['hackathon'] = Hackathon.objects.get(pk=self.kwargs['hack_id'])
         return ret
 
-    def render_to_response(self, context, **response_kwargs):
-        return super(JudgeCreateView, self).render_to_response(context, **response_kwargs)
-
-    def get_template_names(self):
-        return super(JudgeCreateView, self).get_template_names()
-
     def get_success_url(self):
         return reverse("core:judge_list") + "?hack_id=" + self.kwargs['hack_id']
 
@@ -163,19 +101,12 @@ class JudgeCreateView(CreateView):
 class JudgeUpdateView(UpdateView):
     model = Judge
     form_class = JudgeForm
-    # fields = ['first_name', 'last_name', 'email']
     template_name = "core/judge_update.html"
     initial = {}
     slug_field = 'slug'
     slug_url_kwarg = 'slug'
     pk_url_kwarg = 'pk'
     context_object_name = "judge"
-
-    def __init__(self, **kwargs):
-        return super(JudgeUpdateView, self).__init__(**kwargs)
-
-    def dispatch(self, *args, **kwargs):
-        return super(JudgeUpdateView, self).dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         self.hid = request.GET.get('hack_id', '0')
@@ -184,27 +115,6 @@ class JudgeUpdateView(UpdateView):
     def post(self, request, *args, **kwargs):
         self.hid = request.GET.get('hack_id', '0')
         return super(JudgeUpdateView, self).post(request, *args, **kwargs)
-
-    def get_object(self, queryset=None):
-        return super(JudgeUpdateView, self).get_object(queryset)
-
-    def get_queryset(self):
-        return super(JudgeUpdateView, self).get_queryset()
-
-    def get_slug_field(self):
-        return super(JudgeUpdateView, self).get_slug_field()
-
-    def get_form_class(self):
-        return super(JudgeUpdateView, self).get_form_class()
-
-    def get_form(self, form_class=None):
-        return super(JudgeUpdateView, self).get_form(form_class)
-
-    def get_form_kwargs(self, **kwargs):
-        return super(JudgeUpdateView, self).get_form_kwargs(**kwargs)
-
-    def get_initial(self):
-        return super(JudgeUpdateView, self).get_initial()
 
     def form_invalid(self, form):
         return super(JudgeUpdateView, self).form_invalid(form)
@@ -218,15 +128,6 @@ class JudgeUpdateView(UpdateView):
         ret = super(JudgeUpdateView, self).get_context_data(**kwargs)
         ret['hackathon'] = Hackathon.objects.get(pk=self.hid)
         return ret
-
-    def get_context_object_name(self, obj):
-        return super(JudgeUpdateView, self).get_context_object_name(obj)
-
-    def render_to_response(self, context, **response_kwargs):
-        return super(JudgeUpdateView, self).render_to_response(context, **response_kwargs)
-
-    def get_template_names(self):
-        return super(JudgeUpdateView, self).get_template_names()
 
     def get_success_url(self):
         return reverse("core:judge_list") +  "?hack_id=" + self.hid

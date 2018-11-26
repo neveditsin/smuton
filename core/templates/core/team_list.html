@@ -5,11 +5,11 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Teams</h1>
-    <h2><a href={% url "core:team_create" hackathon.pk %}>Create new Team For Hackathon "{{ hackathon }}"</a></h2>
+    <h1>Team list: Hackathon "<a href={% url "core:hackathon_list" %}>{{ hackathon }}"</a></h1>
+    <h2><a href={% url "core:team_create" hackathon.pk %}>Create a new Team</h2>
     <ul>
     {% for team in team_list %}
-        <li><a href={% url "core:team_detail" team.pk %}?hack_id={{ hackathon.pk }}>{{ team }}</a> 
+        <li><a>{{ team }}</a> 
         | 
         <a href={% url "core:team_update" team.pk %}?hack_id={{ hackathon.pk }}>Update</a> 
         | 

@@ -1,5 +1,5 @@
 from django.urls import re_path
-from ..views import (TeamListView, TeamCreateView, TeamDetailView,
+from ..views import (TeamListView, TeamCreateView, 
                      TeamUpdateView, TeamDeleteView)
 from django.contrib.auth.decorators import login_required
 
@@ -17,9 +17,6 @@ urlpatterns = [
         login_required(TeamDeleteView.as_view()),
         name="team_delete"),
 
-    re_path(r'^(?P<pk>\d+)/$',
-        TeamDetailView.as_view(),
-        name="team_detail"),
 
     re_path(r'^$',
         TeamListView.as_view(),
