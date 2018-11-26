@@ -6,7 +6,7 @@ from ..forms import JudgingRoundForm
 from django.urls import reverse
 from django.http import Http404
 from django.shortcuts import render
-
+from django.db.models import Max
 
 
 class JudgingRoundListView(ListView):
@@ -134,7 +134,7 @@ class JudgingRoundCreateView(CreateView):
     def form_valid(self, form):
         obj = form.save(commit=False)
         obj.hackathon = Hackathon.objects.get(pk=self.kwargs['hack_id'])         
-        obj.number = JudgingRound.objects.filter(hackathon = self.kwargs['hack_id']).count() + 1
+        obj.number = JudgingRound.objects.filter(hackathon = self.kwargs['hack_id']).aggregate(Max('number'))['number__max'] + 1
         obj.save()
         return super(JudgingRoundCreateView, self).form_valid(form)
 
