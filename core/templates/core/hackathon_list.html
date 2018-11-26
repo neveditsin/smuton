@@ -10,7 +10,7 @@
     <ul>
     {% for hackathon in hackathon_list %}
         <li>
-        <a href={% url "core:hackathon_detail" hackathon.pk %}>{{ hackathon }}</a>
+        <a>{{ hackathon }}</a>
          | 
          <a href={% url "core:hackathon_update" hackathon.pk %}>Update</a> 
          | 

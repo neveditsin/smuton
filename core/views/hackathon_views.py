@@ -55,23 +55,6 @@ class HackathonListView(ListView):
         return super(HackathonListView, self).get_template_names()
 
 
-class HackathonDetailView(DetailView):
-    model = Hackathon
-    template_name = "core/hackathon_detail.html"
-    context_object_name = "hackathon"
-    slug_field = 'slug'
-    slug_url_kwarg = 'slug'
-    pk_url_kwarg = 'pk'
-
-    def get(self, request, *args, **kwargs):
-        return super(HackathonDetailView, self).get(request, *args, **kwargs)
-
-
-
-
-
-
-
 class HackathonCreateView(CreateView):
     model = Hackathon
     form_class = HackathonForm
@@ -97,7 +80,7 @@ class HackathonCreateView(CreateView):
         return ret
 
     def get_success_url(self):
-        return reverse("core:hackathon_detail", args=(self.object.pk,))
+        return reverse("core:hackathon_list")
 
 
 class HackathonUpdateView(UpdateView):
@@ -129,7 +112,7 @@ class HackathonUpdateView(UpdateView):
 
 
     def get_success_url(self):
-        return reverse("core:hackathon_detail", args=(self.object.pk,))
+        return reverse("core:hackathon_list")
 
 
 class HackathonDeleteView(DeleteView):

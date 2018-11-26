@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from ..views import (HackathonListView, HackathonCreateView, HackathonDetailView,
+from ..views import (HackathonListView, HackathonCreateView,
                      HackathonUpdateView, HackathonDeleteView)
 from django.contrib.auth.decorators import login_required
 
@@ -16,10 +16,6 @@ urlpatterns = [
     url(r'^(?P<pk>\d+)/delete/$',
         login_required(HackathonDeleteView.as_view()),
         name="hackathon_delete"),
-
-    url(r'^(?P<pk>\d+)/$',
-        HackathonDetailView.as_view(),
-        name="hackathon_detail"),
 
     url(r'^$',
         HackathonListView.as_view(),

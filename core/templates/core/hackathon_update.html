@@ -5,15 +5,11 @@
 {% endblock %}
 
 {% block content %}
-<h1><a href={% url "core:hackathon_list" %}>Hackathon</a></h1>
-<h2>Update {{ hackathon }}</h2>
+<h1>Update {{ hackathon }}</h1>
 
 <form action="" method="post">{% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="Update" />
 </form>
-<a href={% url "core:hackathon_detail" hackathon.pk %}>Cancel</a>
-<form style="display:inline;" action={% url "core:hackathon_delete" hackathon.pk %} method="post" onsubmit="return confirm('Are you sure you want to delete {{ hackathon }}?')">{% csrf_token %}
-    <input type="submit" value="Delete" />
-</form>
+<a href={% url "core:hackathon_list" %}>Cancel</a>
 {% endblock %}

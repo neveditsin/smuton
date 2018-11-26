@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Judging Rounds For Hackathon "{{ hackathon }}"</h1>
+    <h1>Judging Rounds For Hackathon "<a href={% url "core:hackathon_list"%}>{{ hackathon }}"</a></h1>
     <h2>
     <form style="display:inline;" action={% url "core:judging_round_create" hackathon.pk %} method="post" onsubmit="return confirm('Are you sure you want to create a new Judging Round?')">{% csrf_token %}
     <input type="submit" value="Create a new judging round" />
