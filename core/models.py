@@ -40,24 +40,28 @@ class ScaleEntry(models.Model):
         return  self.entry # + " (" + self.scale.name + ")"
     class Meta:
         unique_together = (('scale', 'entry'))    
-    
-class Criteria(models.Model):
-    name = models.CharField(max_length=255, verbose_name="Criteria Name", unique=True)
-    scale = models.ForeignKey(Scale, on_delete=models.CASCADE)
-    def __str__(self):
-        return self.name
-    
-    
-    
-        
+
 class JudgingRound(models.Model):
     
     hackathon = models.ForeignKey(Hackathon, on_delete=models.CASCADE)
     number = models.IntegerField(default=1, verbose_name="Round")
-    criteria = models.ManyToManyField(Criteria)
 
     def __str__(self):
         return "round " + str(self.number)
+    
+class Criteria(models.Model):
+    name = models.CharField(max_length=255, verbose_name="Criteria Name")
+    scale = models.ForeignKey(Scale, on_delete=models.CASCADE)
+    judging_round = models.ForeignKey(JudgingRound, on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        unique_together = (('name', 'judging_round'))    
+    
+        
+
     
 class JudgeResponse(models.Model):
     round = models.ForeignKey(JudgingRound, on_delete=models.CASCADE)

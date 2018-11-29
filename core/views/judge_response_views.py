@@ -1,5 +1,5 @@
 from django.views.generic import TemplateView, DeleteView
-from ..models import JudgeResponse, JudgingRound, Responses
+from ..models import JudgeResponse, JudgingRound, Responses, Criteria
 from ..forms import JudgeResponseForm, JudgeResponseFormHead
 from django.urls import reverse
 from django.http import HttpResponseRedirect
@@ -56,7 +56,7 @@ class JudgeResponseCreateView(TemplateView):
         self.jr = JudgingRound.objects.get(pk=kwargs['jround_id']) 
         self.head_form = JudgeResponseFormHead(self.jr)       
         self.forms = []
-        for cr in self.jr.criteria.all():
+        for cr in Criteria.objects.filter(judging_round = self.jr):
             self.forms.append(JudgeResponseForm(cr, prefix=cr.pk))
         return super(JudgeResponseCreateView, self).get(request, *args, **kwargs)
 
@@ -71,7 +71,7 @@ class JudgeResponseCreateView(TemplateView):
         #existing_resps = JudgeResponse.objects.filter(round = jr, judge=post_judge)
         #print(existing_resps)
         try:
-            for cr in jr.criteria.all():
+            for cr in Criteria.objects.filter(judging_round = jr):
                 mark = JudgeResponseForm(cr, request.POST, prefix=cr.pk)
                 if mark.is_valid():      
                     JudgeResponse.objects.create(

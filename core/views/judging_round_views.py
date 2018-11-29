@@ -1,7 +1,7 @@
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView
 from django.views.generic.list import ListView
-from ..models import JudgingRound, Hackathon, JudgeResponse
+from ..models import JudgingRound, Hackathon, JudgeResponse, Criteria
 from ..forms import JudgingRoundForm
 from django.urls import reverse
 from django.http import Http404
@@ -85,7 +85,7 @@ class JudgingRoundDetailView(DetailView):
     def get_context_data(self, **kwargs):
         ret = super(JudgingRoundDetailView, self).get_context_data(**kwargs)
         jr = JudgingRound.objects.get(pk = self.kwargs['pk'])
-        ret['form_created'] = jr.criteria.count()
+        ret['form_created'] = Criteria.objects.filter(judging_round = jr).count()
         ret['have_respones'] = JudgeResponse.objects.filter(round = jr).count()
         return ret
 
@@ -133,8 +133,11 @@ class JudgingRoundCreateView(CreateView):
 
     def form_valid(self, form):
         obj = form.save(commit=False)
-        obj.hackathon = Hackathon.objects.get(pk=self.kwargs['hack_id'])         
-        obj.number = JudgingRound.objects.filter(hackathon = self.kwargs['hack_id']).aggregate(Max('number'))['number__max'] + 1
+        obj.hackathon = Hackathon.objects.get(pk=self.kwargs['hack_id'])
+        if JudgingRound.objects.filter(hackathon = self.kwargs['hack_id']).count() > 0:     
+            obj.number = JudgingRound.objects.filter(hackathon = self.kwargs['hack_id']).aggregate(Max('number'))['number__max'] + 1
+        else:
+            obj.number = 1
         obj.save()
         return super(JudgingRoundCreateView, self).form_valid(form)
 
