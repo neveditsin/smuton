@@ -1,26 +1,22 @@
-import csv
 from core import models
 import pandas as pd
 
 
-
-def import_csv_simple(j_round, override):
+def import_csv_simple(file, j_round, override):
     #round,jid,tid,crit,mark
-    df = unpivot(pd.read_csv('C:\\\\temp\\\\responses_pivot.csv'))
-    
-    load_into_model(j_round, override, df.iterrows())
-    
+    df = unpivot(pd.read_csv(file))    
+    load_into_model(j_round, override, df.iterrows())    
     return
     
-    with open('C:\\\\temp\\\\responses.csv', newline='') as csvfile:
-        resps = csv.DictReader(csvfile)
-        load_into_model(j_round, override, resps)
-            
-    #df = pd.DataFrame.from_records(models.JudgeResponse.objects.filter(round_id=j_round).values())
+    
 def load_into_model(j_round, override_flag, dataset):
+    print(j_round)
+    print(dataset)
     for index, row in dataset:
         r_round = models.JudgingRound.objects.get(id=j_round)
-        r_judge=models.Judge.objects.get(id=int(row['judge']))            
+        #try:
+        r_judge=models.Judge.objects.get(id=int(row['judge']))    
+        #except models.Judge.DoesNotExist:
         r_team=models.Team.objects.get(id=int(row['team']))
         r_crit = models.Criteria.objects.filter(judging_round = r_round).get(name=row['criterion'])
         r_mark = models.ScaleEntry.objects.filter(scale=r_crit.scale.id).\

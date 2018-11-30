@@ -298,3 +298,6 @@ class JudgeResponseForm(forms.Form):
         self.fields['mark'] = forms.ModelChoiceField(queryset=ScaleEntry.objects.filter(scale = self.criteria.scale), \
                                                      widget=forms.RadioSelect(), label = criteria.name, \
                                                      required=True, empty_label = None)  
+
+class UploadFileForm(forms.Form):
+    file = forms.FileField()

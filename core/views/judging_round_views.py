@@ -2,7 +2,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView
 from django.views.generic.list import ListView
 from ..models import JudgingRound, Hackathon, JudgeResponse, Criteria
-from ..forms import JudgingRoundForm
+from ..forms import JudgingRoundForm, UploadFileForm
 from django.urls import reverse
 from django.http import Http404
 from django.shortcuts import render
@@ -87,6 +87,7 @@ class JudgingRoundDetailView(DetailView):
         jr = JudgingRound.objects.get(pk = self.kwargs['pk'])
         ret['form_created'] = Criteria.objects.filter(judging_round = jr).count()
         ret['have_respones'] = JudgeResponse.objects.filter(round = jr).count()
+        ret['file_form'] = UploadFileForm()
         return ret
 
     def get_context_object_name(self, obj):
