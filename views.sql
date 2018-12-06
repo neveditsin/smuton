@@ -8,7 +8,7 @@ CREATE OR REPLACE VIEW core_resonses_vw AS
 	core_team.id as team_id,
 	core_criteria.name as critera,
 	core_scaleentry.weight as mark_weight,	
-	core_scaleentry.name as mark,
+	core_scaleentry.entry as mark,
 	core_judge.name as judge_name
     FROM core_judgeresponse, core_scaleentry, core_judginground, core_criteria, core_judge, core_team
     WHERE 
