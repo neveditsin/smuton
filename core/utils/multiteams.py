@@ -92,10 +92,6 @@ corners(CORNERS,100,10)
 
 t = table(50,250,(WIDTH-50*2, HEIGHT-250-50),2,200,8, 300, 10)
 
-n_entries = 5
-obj_sz = 30
-margin = 10
-min_dist = 15
 
 
 def max_entries(avail, obj_sz, min_dist):
@@ -109,25 +105,36 @@ def break_entries(n_entries, max_entries):
     return(d2,d1)
 
 
+n_entries = 10
+obj_sz = 30
+def draw_entries(rc, cc, vertical, min_dist, margin):
+    sz = (rc[1] if vertical else cc[1])-margin*2
+
+    max_ent = max_entries(sz,obj_sz,min_dist)
+    if(n_entries > max_ent):
+        ent = break_entries(n_entries, max_ent)              
+    else:
+        ent = [n_entries]
+                
+    block = 0
+    for nent in ent:    
+        dist = sz/nent - obj_sz
+        offset = ((rc[1] if vertical else cc[1])-((dist+obj_sz)*nent - dist))/2
+        #d_count = sz/(obj_sz+dist)
+        for i in range(0, nent):
+            if (vertical):
+                circle(obj_sz,cc[0]+margin+block, rc[0]+offset+(dist+obj_sz)*i)
+            else:
+                circle(obj_sz, cc[0]+offset+(dist+obj_sz)*i, rc[0]+margin+block)
+    
+        block+= math.floor((rc[1] if vertical else cc[1])/2) 
+
+
 for rc in t.row_coords:
     for cc in t.col_coords:
-        v_sz = rc[1]-margin*2
-        max_ent = max_entries(v_sz,obj_sz,min_dist)
-        if(n_entries > max_ent):
-            ent = break_entries(n_entries, max_ent)              
-        else:
-            ent = [n_entries]
-                    
-        block = 0
-        for v_entries in ent:    
-            dist = v_sz/v_entries - obj_sz
-            v_offset = (rc[1]-((dist+obj_sz)*v_entries - dist))/2
-            #d_count = v_sz/(obj_sz+dist)
-            for i in range(0, v_entries):            
-                circle(obj_sz,cc[0]+margin+block, rc[0]+v_offset+(dist+obj_sz)*i)
+        draw_entries(rc,cc,False, 15, 10)
         
-            block+= math.floor(cc[1]/2)
-        
+
         
         
 
