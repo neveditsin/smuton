@@ -40,7 +40,7 @@ def mk_qrcode(boxsz, x,y):
 
 
 
-class table:
+class Table:
     row_coords = []
     col_coords = []
     
@@ -87,12 +87,47 @@ class table:
             draw.line(((_x,y),(_x,y+t_sz[1])), fill=0, width=line_wdth)
             self.col_coords.append((_x,col_sz))
 
+
+class Field:
+    size = []
+    textbox_sz = None
+    label = ""
+    font = None
+    field_size = 0
+    min_bw = 5
+    bw = 0
+    def __init__(self, label, font, field_size, label_pos, possible_values):
+        self.label = label
+        self.field_size = field_size
+        self.font = font
+        self.textbox_sz = font.getsize(label)
+        self.label_pos = label_pos
+        if (self.label_pos == 'L'):
+            max_textbox_sz = max([font.getsize(val)[0] for val in possible_values])
+            self.bw = math.ceil(max_textbox_sz) + self.min_bw
+        
+    def do_draw(self, x, y):
+        if (self.label_pos == 'L'):
+            draw.text((x, y), self.label, font=self.font, fill=0)
+            coords = circle(self.field_size, x+self.bw, y)
+            return coords
+    
+    def get_size(self):
+        if (self.label_pos == 'L'):
+            return (self.textbox_sz[0]+self.bw+self.field_size, max(self.textbox_sz[1],self.field_size))
+        
     
 corners(CORNERS,100,10)
 
-t = table(50,250,(WIDTH-50*2, HEIGHT-250-50),2,200,8, 300, 10)
+t = Table(50,250,(WIDTH-50*2, HEIGHT-250-50),2,200,8, 300, 10)
 
-
+font = ImageFont.truetype(font="arial.ttf", size=30)
+f = Field("YES", font, 30, 'L', ("YES", "NO"))
+f.do_draw(500,500)
+f2 = Field("NO", font, 30, 'L', ("YES", "NO"))
+f2.do_draw(500,550)
+print(f.get_size())
+print(f2.get_size())
 
 def max_entries(avail, obj_sz, min_dist):
     return math.floor(avail/(obj_sz+min_dist))
@@ -130,15 +165,17 @@ def draw_entries(rc, cc, vertical, min_dist, margin):
         block+= math.floor((rc[1] if vertical else cc[1])/2) 
 
 
+
 for rc in t.row_coords:
     for cc in t.col_coords:
         draw_entries(rc,cc,False, 15, 10)
         
 
+
         
         
 
-font = ImageFont.truetype(font="arial.ttf", size=50)
+
 #draw.text((200, 500), "hello", font=font, fill=0)
 #print(font.getsize("helloggggggggggggggggggggg"))
 
