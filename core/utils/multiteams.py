@@ -96,19 +96,18 @@ class Field:
     field_size = 0
     min_bw = 5
     bw = 0
-    def __init__(self, label, font, field_size, label_pos, possible_values):
-        self.label = label
+    def __init__(self, font, field_size, label_pos, possible_values):
         self.field_size = field_size
         self.font = font
-        self.textbox_sz = font.getsize(label)
+        self.textbox_sz = (max([font.getsize(val)[0] for val in possible_values]),
+                           max([font.getsize(val)[1] for val in possible_values])) 
         self.label_pos = label_pos
         if (self.label_pos == 'L'):
-            max_textbox_sz = max([font.getsize(val)[0] for val in possible_values])
-            self.bw = math.ceil(max_textbox_sz) + self.min_bw
+            self.bw = math.ceil(self.textbox_sz[0]) + self.min_bw
         
-    def do_draw(self, x, y):
+    def do_draw(self, label, x, y):
         if (self.label_pos == 'L'):
-            draw.text((x, y), self.label, font=self.font, fill=0)
+            draw.text((x, y), label, font=self.font, fill=0)
             coords = circle(self.field_size, x+self.bw, y)
             return coords
     
@@ -122,12 +121,8 @@ corners(CORNERS,100,10)
 t = Table(50,250,(WIDTH-50*2, HEIGHT-250-50),2,200,8, 300, 10)
 
 font = ImageFont.truetype(font="arial.ttf", size=30)
-f = Field("YES", font, 30, 'L', ("YES", "NO"))
-f.do_draw(500,500)
-f2 = Field("NO", font, 30, 'L', ("YES", "NO"))
-f2.do_draw(500,550)
-print(f.get_size())
-print(f2.get_size())
+
+
 
 def max_entries(avail, obj_sz, min_dist):
     return math.floor(avail/(obj_sz+min_dist))
@@ -140,27 +135,29 @@ def break_entries(n_entries, max_entries):
     return(d2,d1)
 
 
-n_entries = 10
-obj_sz = 30
-def draw_entries(rc, cc, vertical, min_dist, margin):
-    sz = (rc[1] if vertical else cc[1])-margin*2
 
+def draw_entries(rc, cc, vertical, min_dist, margin, fld_sz, entries_list):
+    sz = (rc[1] if vertical else cc[1])-margin*2
+    f = Field(font, fld_sz, 'L', entries_list)
+    obj_sz=f.get_size()[1]
     max_ent = max_entries(sz,obj_sz,min_dist)
+    n_entries = len(entries_list)
     if(n_entries > max_ent):
         ent = break_entries(n_entries, max_ent)              
     else:
         ent = [n_entries]
                 
     block = 0
+    entry_idx = 0
     for nent in ent:    
         dist = sz/nent - obj_sz
         offset = ((rc[1] if vertical else cc[1])-((dist+obj_sz)*nent - dist))/2
-        #d_count = sz/(obj_sz+dist)
         for i in range(0, nent):
             if (vertical):
-                circle(obj_sz,cc[0]+margin+block, rc[0]+offset+(dist+obj_sz)*i)
-            else:
+                f.do_draw(entries_list[entry_idx], cc[0]+margin+block, rc[0]+offset+(dist+obj_sz)*i)
+            else: #not implemented
                 circle(obj_sz, cc[0]+offset+(dist+obj_sz)*i, rc[0]+margin+block)
+            entry_idx+=1
     
         block+= math.floor((rc[1] if vertical else cc[1])/2) 
 
@@ -168,7 +165,7 @@ def draw_entries(rc, cc, vertical, min_dist, margin):
 
 for rc in t.row_coords:
     for cc in t.col_coords:
-        draw_entries(rc,cc,False, 15, 10)
+        draw_entries(rc,cc,True, 15, 10, 30, ("1","2","3", "4", "5" ,"6", "7", "8", "9", "10"))
         
 
 
