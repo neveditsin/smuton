@@ -138,8 +138,13 @@ def break_entries(n_entries, max_entries):
 
 def draw_entries(rc, cc, vertical, min_dist, margin, fld_sz, entries_list):
     sz = (rc[1] if vertical else cc[1])-margin*2
-    f = Field(font, fld_sz, 'L', entries_list)
-    obj_sz=f.get_size()[1]
+    if(vertical):
+        f = Field(font, fld_sz, 'L', entries_list)
+        obj_sz=f.get_size()[1]
+    else:
+        f = Field(font, fld_sz, 'L', entries_list)
+        obj_sz=f.get_size()[0]  
+        
     max_ent = max_entries(sz,obj_sz,min_dist)
     n_entries = len(entries_list)
     if(n_entries > max_ent):
@@ -156,7 +161,7 @@ def draw_entries(rc, cc, vertical, min_dist, margin, fld_sz, entries_list):
             if (vertical):
                 f.do_draw(entries_list[entry_idx], cc[0]+margin+block, rc[0]+offset+(dist+obj_sz)*i)
             else: #not implemented
-                circle(obj_sz, cc[0]+offset+(dist+obj_sz)*i, rc[0]+margin+block)
+                f.do_draw(entries_list[entry_idx], cc[0]+offset+(dist+obj_sz)*i, rc[0]+margin+block)
             entry_idx+=1
     
         block+= math.floor((rc[1] if vertical else cc[1])/2) 
@@ -165,7 +170,7 @@ def draw_entries(rc, cc, vertical, min_dist, margin, fld_sz, entries_list):
 
 for rc in t.row_coords:
     for cc in t.col_coords:
-        draw_entries(rc,cc,True, 15, 10, 30, ("1","2","3", "4", "5" ,"6", "7", "8", "9", "10"))
+        draw_entries(rc,cc,False, 15, 10, 30, ("1","2","3","4"))
         
 
 
