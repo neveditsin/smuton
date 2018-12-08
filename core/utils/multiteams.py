@@ -24,7 +24,7 @@ def square(sz, x, y):
 def circle(sz, x, y):
     wdth = 3
     draw.ellipse((x, y, x+sz, y+sz), fill=1, outline = 0, width=wdth)
-    return(x+sz/2, y+sz/2)
+    return(x+(sz/2), y+(sz/2))
 
 def mk_qrcode(boxsz, x,y):
     qr = qrcode.QRCode(
@@ -108,17 +108,17 @@ class Field:
     def do_draw(self, label, x, y):
         if (self.label_pos == 'L'):
             draw.text((x, y), label, font=self.font, fill=0)
-            coords = circle(self.field_size, x+self.bw, y)
+            coords = circle(self.field_size, math.ceil(x+self.bw), y)
             return coords
     
     def get_size(self):
         if (self.label_pos == 'L'):
-            return (self.textbox_sz[0]+self.bw+self.field_size, max(self.textbox_sz[1],self.field_size))
+            return (math.ceil(self.textbox_sz[0])+self.bw+self.field_size, max(math.ceil(self.textbox_sz[1]),self.field_size))
         
     
 corners(CORNERS,100,10)
 
-t = Table(50,250,(WIDTH-50*2, HEIGHT-250-50),2,200,8, 300, 10)
+t = Table(50,250,(WIDTH-50*2, HEIGHT-250-50),2,200,8, 300, 5)
 
 font = ImageFont.truetype(font="arial.ttf", size=30)
 
@@ -154,23 +154,26 @@ def draw_entries(rc, cc, vertical, min_dist, margin, fld_sz, entries_list):
                 
     block = 0
     entry_idx = 0
+    coords = []
     for nent in ent:    
         dist = sz/nent - obj_sz
         offset = ((rc[1] if vertical else cc[1])-((dist+obj_sz)*nent - dist))/2
         for i in range(0, nent):
             if (vertical):
-                f.do_draw(entries_list[entry_idx], cc[0]+margin+block, rc[0]+offset+(dist+obj_sz)*i)
-            else: #not implemented
-                f.do_draw(entries_list[entry_idx], cc[0]+offset+(dist+obj_sz)*i, rc[0]+margin+block)
+                coords.append(f.do_draw(entries_list[entry_idx], cc[0]+margin+block, rc[0]+offset+(dist+obj_sz)*i))
+            else:
+                coords.append(f.do_draw(entries_list[entry_idx], cc[0]+offset+(dist+obj_sz)*i, rc[0]+margin+block))
             entry_idx+=1
     
-        block+= math.floor((rc[1] if vertical else cc[1])/2) 
+        block+= math.floor((rc[1] if vertical else cc[1])/2)
+    return coords
+    
 
 
 
 for rc in t.row_coords:
     for cc in t.col_coords:
-        draw_entries(rc,cc,False, 15, 10, 30, ("1","2","3","4"))
+        print(draw_entries(rc,cc,True, 15, 10, 30, ("1","2","3","4","1","2")))
         
 
 
