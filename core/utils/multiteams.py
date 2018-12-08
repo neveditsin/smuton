@@ -5,6 +5,7 @@ from PIL import ImageDraw
 import qrcode
 from fpdf import FPDF
 import math 
+from core.utils.template_creator import create_template
 
 
 WIDTH = 3300
@@ -17,6 +18,8 @@ def corners(margin, size, width):
     draw.rectangle([(margin, margin), (WIDTH-margin, HEIGHT-margin)], outline = 0, width=width)
     draw.rectangle([(margin+size, 0), (WIDTH-margin-size, HEIGHT)], outline=1, fill=1)
     draw.rectangle([(0, margin+size), (WIDTH, HEIGHT-margin-size)], outline=1, fill=1)
+    return ((margin, margin), (WIDTH-margin, margin), 
+            (margin, HEIGHT-margin), (WIDTH-margin, HEIGHT-margin),)
     
 def square(sz, x, y):
     wdth = 3
@@ -166,19 +169,24 @@ def draw_entries(rc, cc, vertical, min_dist, margin, fld_sz, entries_list):
 
 
 
-corners(CORNERS,100,10)
+cornrs = corners(CORNERS,100,10)
 t = Table(50,250,(WIDTH-50*2, HEIGHT-250-50),2,200,4, 300, 4)
 font = ImageFont.truetype(font="arial.ttf", size=30)
 
-#from .utils import template_creator
-for rc in t.row_coords:
+import sys
+sys.path.append('..')
+from core.utils import template_creator
+groups = []
+for rc in t.row_coords:    
     for cc in t.col_coords[0:1]:
         entries =  ("1","2","3","4")
         coords = draw_entries(rc,cc,True, 15, 10, 30,entries)
-        print(coords)
-        #for c in coords:
-        #    template_creator.create_resp(c[0], c[1], c[2])
-        
+        resps = []        
+        for c in coords:
+            resps.append(template_creator.create_resp(c[0], c[1][0], c[1][1]))
+        groups.append(template_creator.create_group("GRP"+str(rc), resps))
+
+print(create_template(cornrs[0], cornrs[1], cornrs[2], cornrs[3],groups,30))
 
 
         

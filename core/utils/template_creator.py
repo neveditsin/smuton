@@ -46,14 +46,23 @@ def create_group(id, resps):
         val+="\n"
     return group.replace("$ID$", id).replace("$VALS$", val)
 
-def create_template(groups):
+def create_template(tl,tr,bl,br,groups, field_sz):
     grps = ""
     for g in groups:
         grps+=g
         grps+="\n"
-    return template.replace("$GROUPS$", grps)
+    return template.replace("$GROUPS$", grps).\
+            replace("$TR_X$", str(tr[0])).\
+            replace("$TR_Y$", str(tr[1])).\
+            replace("$TL_X$", str(tl[0])).\
+            replace("$TL_Y$", str(tl[1])).\
+            replace("$BR_X$", str(br[0])).\
+            replace("$BR_Y$", str(br[1])).\
+            replace("$BL_X$", str(bl[0])).\
+            replace("$BL_Y$", str(bl[1])).\
+            replace("$SZ$", str(field_sz))
 
-r1 = create_resp("Yes", 100, 200)
-r2 = create_resp("N0", 200, 200)
-g1 = create_group("ROBUS_TEAM1", (r1,r2))
-print(create_template((g1,g1)))
+#r1 = create_resp("Yes", 100, 200)
+#r2 = create_resp("N0", 200, 200)
+#g1 = create_group("ROBUS_TEAM1", (r1,r2))
+#print(create_template((g1,g1)))
