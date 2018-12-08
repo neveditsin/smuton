@@ -118,7 +118,7 @@ class Field:
     
 corners(CORNERS,100,10)
 
-t = Table(50,250,(WIDTH-50*2, HEIGHT-250-50),2,200,8, 300, 5)
+t = Table(50,250,(WIDTH-50*2, HEIGHT-250-50),2,200,4, 300, 4)
 
 font = ImageFont.truetype(font="arial.ttf", size=30)
 
@@ -156,7 +156,7 @@ def draw_entries(rc, cc, vertical, min_dist, margin, fld_sz, entries_list):
     entry_idx = 0
     coords = []
     for nent in ent:    
-        dist = sz/nent - obj_sz
+        dist = math.floor(sz/nent - obj_sz)
         offset = ((rc[1] if vertical else cc[1])-((dist+obj_sz)*nent - dist))/2
         for i in range(0, nent):
             if (vertical):
@@ -165,7 +165,7 @@ def draw_entries(rc, cc, vertical, min_dist, margin, fld_sz, entries_list):
                 coords.append(f.do_draw(entries_list[entry_idx], cc[0]+offset+(dist+obj_sz)*i, rc[0]+margin+block))
             entry_idx+=1
     
-        block+= math.floor((rc[1] if vertical else cc[1])/2)
+        block+= math.floor((cc[1] if vertical else rc[1])/2)
     return coords
     
 
@@ -173,7 +173,7 @@ def draw_entries(rc, cc, vertical, min_dist, margin, fld_sz, entries_list):
 
 for rc in t.row_coords:
     for cc in t.col_coords:
-        print(draw_entries(rc,cc,True, 15, 10, 30, ("1","2","3","4","1","2")))
+        print(draw_entries(rc,cc,True, 15, 10, 30, ("1","2","3","4","1","2", "4","5","6")))
         
 
 
