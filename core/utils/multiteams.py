@@ -1,9 +1,11 @@
+
 from PIL import Image
 from PIL import ImageFont
 from PIL import ImageDraw 
 import qrcode
 from fpdf import FPDF
 import math 
+
 
 WIDTH = 3300
 HEIGHT = 2550
@@ -116,13 +118,6 @@ class Field:
             return (math.ceil(self.textbox_sz[0])+self.bw+self.field_size, max(math.ceil(self.textbox_sz[1]),self.field_size))
         
     
-corners(CORNERS,100,10)
-
-t = Table(50,250,(WIDTH-50*2, HEIGHT-250-50),2,200,4, 300, 4)
-
-font = ImageFont.truetype(font="arial.ttf", size=30)
-
-
 
 def max_entries(avail, obj_sz, min_dist):
     return math.floor(avail/(obj_sz+min_dist))
@@ -160,9 +155,9 @@ def draw_entries(rc, cc, vertical, min_dist, margin, fld_sz, entries_list):
         offset = ((rc[1] if vertical else cc[1])-((dist+obj_sz)*nent - dist))/2
         for i in range(0, nent):
             if (vertical):
-                coords.append(f.do_draw(entries_list[entry_idx], cc[0]+margin+block, rc[0]+offset+(dist+obj_sz)*i))
+                coords.append((entries_list[entry_idx], f.do_draw(entries_list[entry_idx], cc[0]+margin+block, rc[0]+offset+(dist+obj_sz)*i)))
             else:
-                coords.append(f.do_draw(entries_list[entry_idx], cc[0]+offset+(dist+obj_sz)*i, rc[0]+margin+block))
+                coords.append((entries_list[entry_idx], f.do_draw(entries_list[entry_idx], cc[0]+offset+(dist+obj_sz)*i, rc[0]+margin+block)))
             entry_idx+=1
     
         block+= math.floor((cc[1] if vertical else rc[1])/2)
@@ -171,9 +166,18 @@ def draw_entries(rc, cc, vertical, min_dist, margin, fld_sz, entries_list):
 
 
 
+corners(CORNERS,100,10)
+t = Table(50,250,(WIDTH-50*2, HEIGHT-250-50),2,200,4, 300, 4)
+font = ImageFont.truetype(font="arial.ttf", size=30)
+
+#from .utils import template_creator
 for rc in t.row_coords:
-    for cc in t.col_coords:
-        print(draw_entries(rc,cc,True, 15, 10, 30, ("1","2","3","4","1","2", "4","5","6")))
+    for cc in t.col_coords[0:1]:
+        entries =  ("1","2","3","4")
+        coords = draw_entries(rc,cc,True, 15, 10, 30,entries)
+        print(coords)
+        #for c in coords:
+        #    template_creator.create_resp(c[0], c[1], c[2])
         
 
 
