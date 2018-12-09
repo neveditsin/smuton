@@ -13,6 +13,7 @@
         	<p><a href={% url "core:judge_response_list" judging_round.pk %}> View Responses</a></p>
         	<p><a href={% url "core:round_results" judging_round.pk %}> Round Results</a></p> 
         {% endif %}
+        <p><a href={% url "core:paper_form" judging_round.pk %}> Paper-based forms</a></p>
         
         <form action={% url "core:round_results" judging_round.pk %} method="post" enctype="multipart/form-data">{% csrf_token %} 
         <p>Load responses from CSV:</p>

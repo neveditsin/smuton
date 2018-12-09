@@ -39,3 +39,20 @@ class SumbitFormView(TemplateView):
         
     def get_success_url(self):
         return reverse("core:judging_round_detail", kwargs={'pk':self.kwargs['jround_id']})
+    
+    
+class PaperFormView(TemplateView):
+    template_name = "core/paper_form_create.html"
+    
+    def post(self, request, *args, **kwargs):
+        p = request.POST
+        return HttpResponseRedirect(self.get_success_url())
+
+    
+    def get_context_data(self, *args, **kwargs):        
+        ret = super(PaperFormView, self).get_context_data(*args, **kwargs)
+        return ret
+    
+        
+    def get_success_url(self):
+        return reverse("core:judging_round_detail", kwargs={'pk':self.kwargs['jround_id']})
