@@ -48,6 +48,9 @@ class PaperFormView(TemplateView):
         p = request.POST
         return HttpResponseRedirect(self.get_success_url())
 
+    def get(self, request, *args, **kwargs):
+        self.jr = JudgingRound.objects.get(pk=kwargs['jround_id']) 
+        return super(PaperFormView, self).get(request, *args, **kwargs)
     
     def get_context_data(self, *args, **kwargs):        
         ret = super(PaperFormView, self).get_context_data(*args, **kwargs)

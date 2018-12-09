@@ -31,13 +31,13 @@ def circle(sz, x, y):
     draw.ellipse((x, y, x+sz, y+sz), fill=1, outline = 0, width=wdth)
     return(x+(sz/2), y+(sz/2))
 
-def mk_qrcode(boxsz, x,y):
+def mk_qrcode(data,boxsz, x,y):
     qr = qrcode.QRCode(
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_M,
         box_size=boxsz,
         border=0)
-    qr.add_data('{0:010d}'.format(1))
+    qr.add_data(data)
     qr.make(fit=True)  
     qr_code = qr.make_image(fill_color="black", back_color="white")
     img.paste(qr_code, (x,y))
@@ -186,26 +186,21 @@ for rc in t.row_coords:
             resps.append(template_creator.create_resp(c[0], c[1][0], c[1][1]))
         groups.append(template_creator.create_group("GRP"+str(rc), resps))
 
+#data '{0:010d}'.format(1)
+qr_coords = mk_qrcode('{0:010d}'.format(1),8, CORNERS*2, CORNERS*2)
+qr_template = template_creator.create_qr("hack_id", (qr_coords[0],qr_coords[1]),
+                                            (qr_coords[0]+qr_coords[2], qr_coords[1]),
+                                            (qr_coords[0], qr_coords[1]+qr_coords[3]),
+                                            (qr_coords[0]+qr_coords[2], qr_coords[1]+qr_coords[3]))
+
+groups.append(qr_template)      
 print(create_template(cornrs[0], cornrs[1], cornrs[2], cornrs[3],groups,30))
-
-
-        
-        
 
 
 #draw.text((200, 500), "hello", font=font, fill=0)
 #print(font.getsize("helloggggggggggggggggggggg"))
 
-
-
 #print(circle(30, 300, 600))
-print(mk_qrcode(8, CORNERS*2, CORNERS*2))
-
-      
-        
-
-
-
 
 img.save("C:\\temp\\image.png", "PNG")
 
