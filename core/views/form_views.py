@@ -1,6 +1,6 @@
 from django.views.generic import TemplateView
 
-from ..models import Criteria, Scale, JudgingRound
+from ..models import Criteria, Scale, JudgingRound, ScaleEntry, Team
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.db import IntegrityError
@@ -53,12 +53,15 @@ class PaperFormView(TemplateView):
     def get(self, request, *args, **kwargs):
         self.jr = JudgingRound.objects.get(pk=kwargs['jround_id']) 
         
-        form = MultientryPaperForm("Nik Nev",  {"header1": ("AA","2","3"),
-                                      "header2": ("11","12","13"),
-                                      "header3": ("a","b","c"),
-                                      "header4": ("yes","no")
-                                      }, 
-                                      ("team1", "team2", "team3", "team4"))
+        crs = Criteria.objects.filter(judging_round=self.jr).all()
+        columns = {}
+        for cr in crs:
+            scale_entries = list(ScaleEntry.objects.filter(scale=cr.scale).all().values_list('entry', flat=True))
+            columns[cr.name] = scale_entries
+            
+        teams = list(Team.objects.filter(hackathon = self.jr.hackathon).all().values_list('name', flat=True))
+        
+        form = MultientryPaperForm("Nik Nev",  columns, teams)
 
         form.save_template("C:\\temp\\template.xtmpl")
         form.save_as_pdf("C:\\temp\\form.pdf")
