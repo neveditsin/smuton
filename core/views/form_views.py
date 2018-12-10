@@ -6,6 +6,7 @@ from django.http import HttpResponseRedirect
 from django.db import IntegrityError
 from django.contrib import messages
 from ..utils.multiteams import MultientryPaperForm
+from core.utils import csvutils
 
 
 class SumbitFormView(TemplateView):
@@ -65,6 +66,8 @@ class PaperFormView(TemplateView):
 
         form.save_template("C:\\temp\\template.xtmpl")
         form.save_as_pdf("C:\\temp\\form.pdf")
+        
+        csvutils.fs_csv_parse("C:\\temp\\scan\\results_20181210172459.csv")
 
         return super(PaperFormView, self).get(request, *args, **kwargs)
     

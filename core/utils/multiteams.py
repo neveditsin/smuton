@@ -122,6 +122,7 @@ class MultientryPaperForm:
     font = ImageFont.truetype(font="arial.ttf", size=FIELD_SZ)
     t = None
     template = None
+    DATA_SEPARATOR = '$__sep__$'
    
     
     def __init__(self,qr_info,columns,rownames):
@@ -153,7 +154,8 @@ class MultientryPaperForm:
                 resps = []        
                 for c in coords:
                     resps.append(template_creator.create_resp(c[0], c[1][0], c[1][1]))
-                groups.append(template_creator.create_group(header+"::" +row_val, resps))
+                                        
+                groups.append(template_creator.create_group(header+self.DATA_SEPARATOR+row_val, resps))
                 col_idx +=1
             row_idx+=1
 
@@ -249,23 +251,3 @@ class MultientryPaperForm:
 
 #data '{0:010d}'.format(1)
 
-
-
-
-#draw.text((200, 500), "hello", font=font, fill=0)
-#print(font.getsize("hello"))
-# form = MultientryPaperForm("Nik Nev",  {"header1": ("1","2","3"),
-#                                       "header2": ("11","12","13"),
-#                                       "header3": ("a","b","c"),
-#                                       "header4": ("yes","no")
-#                                       }, 
-#                                       ("team1", "team2", "team3", "team4"))
-# 
-# #print(form.get_template())
-# form.save_as_image("C:\\temp\\image.png")
-# 
-# 
-# pdf = FPDF(unit = "pt", format = [form.WIDTH, form.HEIGHT])
-# pdf.add_page()
-# pdf.image("C:\\temp\\image.png", 0, 0)
-# pdf.output("C:\\temp\\form.pdf", "F")

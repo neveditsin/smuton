@@ -1,5 +1,40 @@
 from core import models
+from core.utils.multiteams import MultientryPaperForm
 import pandas as pd
+
+
+def fs_csv_parse(path):
+    QR_TAG = 'Evaluator.id'
+
+    data = pd.read_csv(path, sep = ';', header = None)
+    df = data
+    
+    #print(dt)
+    filename = df[0][1]
+    df = df.drop([0], axis=1)
+    print(filename)
+    
+    df = df.T
+    
+    criteria_team_mark = []
+    for index, row in df.iterrows():
+        if(row[0] == QR_TAG):
+            qr_data = row[1]
+        else:
+            cr_team = row[0].split(MultientryPaperForm.DATA_SEPARATOR)
+            cr = cr_team[0]
+            team = cr_team[1].replace(".sources", "")
+            mark = row[1]
+            criteria_team_mark.append((cr, team, mark))
+            
+       
+    print(qr_data)
+#     
+#     for cmt in criteria_team_mark:
+#         r_team = models.Team.objects.filter()
+#         r_crit = models.Criteria.objects.filter(judging_round = r_round).get(name=row['criterion'])
+#         r_mark = models.ScaleEntry.objects.filter(scale=r_crit.scale.id).\
+#                                                 get(entry=row['value'])
 
 
 def import_csv_simple(file, j_round, override):
