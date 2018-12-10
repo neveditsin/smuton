@@ -62,7 +62,9 @@ class PaperFormView(TemplateView):
             
         teams = list(Team.objects.filter(hackathon = self.jr.hackathon).all().values_list('name', flat=True))
         
-        form = MultientryPaperForm("Nik Nev",  columns, teams)
+        judge_id = 5
+        qr_info = str(self.jr.pk)+";"+str(judge_id)
+        form = MultientryPaperForm(qr_info,  columns, teams)
 
         form.save_template("C:\\temp\\template.xtmpl")
         form.save_as_pdf("C:\\temp\\form.pdf")

@@ -4,8 +4,7 @@ import pandas as pd
 
 
 def fs_csv_parse(path):
-    QR_TAG = 'Evaluator.id'
-
+ 
     data = pd.read_csv(path, sep = ';', header = None)
     df = data
     
@@ -18,7 +17,7 @@ def fs_csv_parse(path):
     
     criteria_team_mark = []
     for index, row in df.iterrows():
-        if(row[0] == QR_TAG):
+        if(row[0] == MultientryPaperForm.QR_FIELD):
             qr_data = row[1]
         else:
             cr_team = row[0].split(MultientryPaperForm.DATA_SEPARATOR)

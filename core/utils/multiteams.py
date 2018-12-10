@@ -122,8 +122,8 @@ class MultientryPaperForm:
     font = ImageFont.truetype(font="arial.ttf", size=FIELD_SZ)
     t = None
     template = None
-    DATA_SEPARATOR = '$__sep__$'
-   
+    DATA_SEPARATOR = '$__sep__$'   
+    QR_FIELD = 'QR_INFO'
     
     def __init__(self,qr_info,columns,rownames):
         ncol = len(columns)
@@ -134,7 +134,7 @@ class MultientryPaperForm:
         cornrs = self.corners(self.CORNERS,100,10)
         self.t = Table(self.draw, 50,250,(self.WIDTH-50*2, self.HEIGHT-250-50),2,200,nrow,300,ncol)
         qr_coords = self.mk_qrcode(qr_info, 8, self.CORNERS*2, self.CORNERS*2) 
-        qr_group = template_creator.create_qr("Evaluator", 
+        qr_group = template_creator.create_qr(self.QR_FIELD, 
                                     (qr_coords[0]             , qr_coords[1]),
                                     (qr_coords[0]+qr_coords[2], qr_coords[1]),
                                     (qr_coords[0]             , qr_coords[1]+qr_coords[3]),
