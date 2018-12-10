@@ -16,6 +16,10 @@ from core.utils import template_creator
 class Table:
     row_coords = []
     col_coords = []
+    
+    colname_boxes = []
+    rowname_boxes = []
+    
     draw = None
     
     def __init__(self, draw, x,y, t_sz, line_wdth, header_height, nrow, row_header_height, ncol):
@@ -35,32 +39,35 @@ class Table:
             pg_count = math.ceil(nrow/count_fit)
             return(pg_count,count_fit)
         
-    def draw_table(self, x,y, t_sz, line_wdth, header_height, nrow, row_header_height, ncol):
+    def draw_table(self, x,y, t_sz, line_wdth, header_height, nrow, row_header_width, ncol):
         self.draw.rectangle(((x, y), (x+t_sz[0], y+t_sz[1])), outline=0, width=line_wdth)
-        #horizontal
-        #header
+
         header_height = header_height
-        self.draw.line(((x,y+header_height),(x+t_sz[0],y+header_height)), fill=0, width=line_wdth)
-        
+        self.draw.line(((x,y+header_height),(x+t_sz[0],y+header_height)), fill=0, width=line_wdth)        
         row_sz = math.floor((t_sz[1]-header_height)/nrow)
+        
         self.row_coords.append((y+header_height,row_sz))
+
+        self.rowname_boxes.append((x, y+header_height, x+row_header_width, y+header_height+row_sz))
         for i in range(1, nrow):
             dy = math.floor(row_sz*i)
             _y = (y+header_height)+dy
             self.draw.line(((x,_y),(x+t_sz[0],_y)), fill=0, width=line_wdth)
             self.row_coords.append((_y,row_sz))
+            self.rowname_boxes.append((x, _y, x+row_header_width, _y+row_sz))
          
-        #vertical
-        #row_lables
-        self.draw.line(((x+row_header_height,y),(x+row_header_height, y+t_sz[1])), fill=0, width=line_wdth)
+
+        self.draw.line(((x+row_header_width,y),(x+row_header_width, y+t_sz[1])), fill=0, width=line_wdth)
         
-        col_sz = math.floor((t_sz[0]-row_header_height)/ncol)
-        self.col_coords.append((x+row_header_height,col_sz))
+        col_sz = math.floor((t_sz[0]-row_header_width)/ncol)
+        self.col_coords.append((x+row_header_width,col_sz))
+        self.colname_boxes.append((x+row_header_width, y, x+row_header_width+col_sz, y+header_height))        
         for i in range(1, ncol):
             dx = math.floor(col_sz*i)
-            _x = x+row_header_height+dx
+            _x = x+row_header_width+dx
             self.draw.line(((_x,y),(_x,y+t_sz[1])), fill=0, width=line_wdth)
             self.col_coords.append((_x,col_sz))
+            self.colname_boxes.append((_x, y, _x+col_sz, y+header_height))
 
 
 class Field:
@@ -114,29 +121,47 @@ class MultientryPaperForm:
     template = None
    
     
-    def __init__(self,qr_info,ncol,nrow):
+    def __init__(self,qr_info,columns,rownames):
+        ncol = len(columns)
+        nrow = len(rownames)
+        
         groups = []
         
         cornrs = self.corners(self.CORNERS,100,10)
         self.t = Table(self.draw, 50,250,(self.WIDTH-50*2, self.HEIGHT-250-50),2,200,nrow,300,ncol)
         qr_coords = self.mk_qrcode(qr_info, 8, self.CORNERS*2, self.CORNERS*2) 
-        qr_group = template_creator.create_qr(qr_info, (qr_coords[0],qr_coords[1]),
+        qr_group = template_creator.create_qr("Evaluator", 
+                                    (qr_coords[0]             , qr_coords[1]),
                                     (qr_coords[0]+qr_coords[2], qr_coords[1]),
-                                    (qr_coords[0], qr_coords[1]+qr_coords[3]),
+                                    (qr_coords[0]             , qr_coords[1]+qr_coords[3]),
                                     (qr_coords[0]+qr_coords[2], qr_coords[1]+qr_coords[3]))
         groups.append(qr_group)
         
-        for rc in self.t.row_coords:    
-            for cc in self.t.col_coords[0:1]:
-                entries =  ("1","2","3","4")
+
+        row_idx = 0
+        for rc in self.t.row_coords:
+            row_val = rownames[row_idx]
+            self.draw_text_in_box(row_val, self.font, self.t.rowname_boxes[row_idx], 10)
+            col_idx = 0
+            for header, entries in columns.items():
+                self.draw_text_in_box(header, self.font, self.t.colname_boxes[col_idx], 10)
+                cc = self.t.col_coords[col_idx]                
                 coords = self.draw_entries(rc,cc,True, 15, 10, 30,entries)
                 resps = []        
                 for c in coords:
                     resps.append(template_creator.create_resp(c[0], c[1][0], c[1][1]))
-                groups.append(template_creator.create_group("GRP"+str(rc), resps))
+                groups.append(template_creator.create_group(header+"::" +row_val, resps))
+                col_idx +=1
+            row_idx+=1
 
         self.template = template_creator.create_template(cornrs[0], cornrs[1], cornrs[2], cornrs[3],groups,30)
-        
+
+    def draw_text_in_box(self, text, font, box, margin):
+        #TODO FIT
+        self.draw.text((box[0]+margin, box[1]+margin), text, font=font, fill=0)
+
+    def get_template(self):
+        return self.template
               
     def save_as_image(self,path): #"C:\\temp\\image.png"
         self.img.save(path, "PNG")
@@ -213,7 +238,14 @@ class MultientryPaperForm:
 
 #draw.text((200, 500), "hello", font=font, fill=0)
 #print(font.getsize("hello"))
-form = MultientryPaperForm("hello", 4,8)
+form = MultientryPaperForm("Nik Nev",  {"header1": ("1","2","3"),
+                                      "header2": ("11","12","13"),
+                                      "header3": ("a","b","c"),
+                                      "header4": ("yes","no")
+                                      }, 
+                                      ("team1", "team2", "team3", "team4"))
+
+#print(form.get_template())
 form.save_as_image("C:\\temp\\image.png")
 
 
