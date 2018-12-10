@@ -5,7 +5,9 @@ from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.db import IntegrityError
 from django.contrib import messages
-        
+from ..utils.multiteams import MultientryPaperForm
+
+
 class SumbitFormView(TemplateView):
     template_name = "core/form_create.html"
     
@@ -50,6 +52,17 @@ class PaperFormView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         self.jr = JudgingRound.objects.get(pk=kwargs['jround_id']) 
+        
+        form = MultientryPaperForm("Nik Nev",  {"header1": ("AA","2","3"),
+                                      "header2": ("11","12","13"),
+                                      "header3": ("a","b","c"),
+                                      "header4": ("yes","no")
+                                      }, 
+                                      ("team1", "team2", "team3", "team4"))
+
+        form.save_template("C:\\temp\\template.xtmpl")
+        form.save_as_pdf("C:\\temp\\form.pdf")
+
         return super(PaperFormView, self).get(request, *args, **kwargs)
     
     def get_context_data(self, *args, **kwargs):        

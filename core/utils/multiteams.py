@@ -3,8 +3,8 @@ from PIL import Image
 from PIL import ImageFont
 from PIL import ImageDraw 
 import qrcode
-from fpdf import FPDF
 import math 
+from fpdf import FPDF 
 
 ##testing only
 import sys
@@ -14,15 +14,17 @@ from core.utils import template_creator
 
 
 class Table:
-    row_coords = []
-    col_coords = []
-    
-    colname_boxes = []
-    rowname_boxes = []
-    
+    row_coords = None
+    col_coords = None   
+    colname_boxes = None
+    rowname_boxes = None    
     draw = None
     
     def __init__(self, draw, x,y, t_sz, line_wdth, header_height, nrow, row_header_height, ncol):
+        self.row_coords = []
+        self.col_coords = []
+        self.colname_boxes = []
+        self.rowname_boxes = []
         self.draw = draw
         self.draw_table(x,y, t_sz, line_wdth, header_height, nrow, row_header_height, ncol)
 
@@ -114,9 +116,10 @@ class MultientryPaperForm:
     WIDTH = 3300 #hardcoded for now
     HEIGHT = 2550 #hardcoded for now
     CORNERS = 25 #hardcoded for now
+    FIELD_SZ = 30
     img = Image.new('1', (WIDTH, HEIGHT), 1)
     draw = ImageDraw.Draw(img)
-    font = ImageFont.truetype(font="arial.ttf", size=30)
+    font = ImageFont.truetype(font="arial.ttf", size=FIELD_SZ)
     t = None
     template = None
    
@@ -154,7 +157,7 @@ class MultientryPaperForm:
                 col_idx +=1
             row_idx+=1
 
-        self.template = template_creator.create_template(cornrs[0], cornrs[1], cornrs[2], cornrs[3],groups,30)
+        self.template = template_creator.create_template(cornrs[0], cornrs[1], cornrs[2], cornrs[3],groups,self.FIELD_SZ)
 
     def draw_text_in_box(self, text, font, box, margin):
         #TODO FIT
@@ -162,9 +165,22 @@ class MultientryPaperForm:
 
     def get_template(self):
         return self.template
+    
+    def save_template(self, path):
+        text_file = open(path, "w")
+        text_file.write(self.get_template())
+        text_file.close()
+
               
-    def save_as_image(self,path): #"C:\\temp\\image.png"
+    def __save_as_image(self,path): #"C:\\temp\\image.png"
         self.img.save(path, "PNG")
+    
+    def save_as_pdf(self,path):
+            self.__save_as_image("C:\\temp\\image.png")          
+            pdf = FPDF(unit = "pt", format = [self.WIDTH, self.HEIGHT])
+            pdf.add_page()
+            pdf.image("C:\\temp\\image.png", 0, 0)
+            pdf.output(path, "F") #"C:\\temp\\form.pdf"
     
     def corners(self, margin, size, width):
         self.draw.rectangle([(margin, margin), (self.WIDTH-margin, self.HEIGHT-margin)], outline = 0, width=width)
@@ -238,18 +254,18 @@ class MultientryPaperForm:
 
 #draw.text((200, 500), "hello", font=font, fill=0)
 #print(font.getsize("hello"))
-form = MultientryPaperForm("Nik Nev",  {"header1": ("1","2","3"),
-                                      "header2": ("11","12","13"),
-                                      "header3": ("a","b","c"),
-                                      "header4": ("yes","no")
-                                      }, 
-                                      ("team1", "team2", "team3", "team4"))
-
-#print(form.get_template())
-form.save_as_image("C:\\temp\\image.png")
-
-
-pdf = FPDF(unit = "pt", format = [form.WIDTH, form.HEIGHT])
-pdf.add_page()
-pdf.image("C:\\temp\\image.png", 0, 0)
-pdf.output("C:\\temp\\form.pdf", "F")
+# form = MultientryPaperForm("Nik Nev",  {"header1": ("1","2","3"),
+#                                       "header2": ("11","12","13"),
+#                                       "header3": ("a","b","c"),
+#                                       "header4": ("yes","no")
+#                                       }, 
+#                                       ("team1", "team2", "team3", "team4"))
+# 
+# #print(form.get_template())
+# form.save_as_image("C:\\temp\\image.png")
+# 
+# 
+# pdf = FPDF(unit = "pt", format = [form.WIDTH, form.HEIGHT])
+# pdf.add_page()
+# pdf.image("C:\\temp\\image.png", 0, 0)
+# pdf.output("C:\\temp\\form.pdf", "F")
