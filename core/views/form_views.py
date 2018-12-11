@@ -66,8 +66,7 @@ class PaperFormView(TemplateView):
         qr_info = str(self.jr.pk)+";"+str(judge_id)
         form = MultientryPaperForm(qr_info,  columns, teams)
 
-        form.save_template("C:\\temp\\template.xtmpl")
-        form.save_as_pdf("C:\\temp\\form.pdf")
+
         
         csvutils.fs_csv_parse("C:\\temp\\scan\\results_20181210172459.csv")
 

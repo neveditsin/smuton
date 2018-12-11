@@ -1,5 +1,5 @@
 from core import models
-from core.utils.multiteams import MultientryPaperForm
+from core.utils.multiteams import MultientryPaperForm, MultientryPaperFormPage
 import pandas as pd
 
 
@@ -17,10 +17,10 @@ def fs_csv_parse(path):
     
     criteria_team_mark = []
     for index, row in df.iterrows():
-        if(row[0] == MultientryPaperForm.QR_FIELD):
+        if(row[0] == MultientryPaperFormPage.QR_FIELD):
             qr_data = row[1]
         else:
-            cr_team = row[0].split(MultientryPaperForm.DATA_SEPARATOR)
+            cr_team = row[0].split(MultientryPaperFormPage.DATA_SEPARATOR)
             cr = cr_team[0]
             team = cr_team[1].replace(".sources", "")
             mark = row[1]

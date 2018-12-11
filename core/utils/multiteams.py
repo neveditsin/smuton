@@ -11,7 +11,8 @@ import sys
 sys.path.append('..')
 ##testing only END
 from core.utils import template_creator
-
+import glob
+import os
 
 class Table:
     row_coords = None
@@ -20,16 +21,16 @@ class Table:
     rowname_boxes = None    
     draw = None
     
-    def __init__(self, draw, x,y, t_sz, line_wdth, header_height, nrow, row_header_height, ncol):
+    def __init__(self, draw, x,y, t_sz, line_wdth, header_height, nrow, row_header_width, ncol):
         self.row_coords = []
         self.col_coords = []
         self.colname_boxes = []
         self.rowname_boxes = []
         self.draw = draw
-        self.draw_table(x,y, t_sz, line_wdth, header_height, nrow, row_header_height, ncol)
+        self.draw_table(x,y, t_sz, line_wdth, header_height, nrow, row_header_width, ncol)
 
-    
-    def fit_count(self, header_height, t_sz, min_row_sz, nrow):
+    @staticmethod
+    def fit_count(header_height, t_sz, min_row_sz, nrow):
         row_sz = (t_sz[1]-header_height)/nrow
         if row_sz < min_row_sz:
             row_sz = min_row_sz
@@ -40,6 +41,8 @@ class Table:
             #pages_count
             pg_count = math.ceil(nrow/count_fit)
             return(pg_count,count_fit)
+        else:
+            return(1,nrow)
         
     def draw_table(self, x,y, t_sz, line_wdth, header_height, nrow, row_header_width, ncol):
         self.draw.rectangle(((x, y), (x+t_sz[0], y+t_sz[1])), outline=0, width=line_wdth)
@@ -80,6 +83,8 @@ class Field:
     field_size = 0
     min_bw = 5
     bw = 0
+    
+    
     def __init__(self, font, draw, field_size, label_pos, possible_values):
         self.draw = draw
         self.field_size = field_size
@@ -89,6 +94,10 @@ class Field:
         self.label_pos = label_pos
         if (self.label_pos == 'L'):
             self.bw = math.ceil(self.textbox_sz[0]) + self.min_bw
+    
+#     @staticmethod
+#     def the_static_method(x):
+#         print(x)
             
     def square(self, sz, x, y):
         wdth = 3
@@ -112,7 +121,7 @@ class Field:
 
 
 
-class MultientryPaperForm:
+class MultientryPaperFormPage:
     WIDTH = 3300 #hardcoded for now
     HEIGHT = 2550 #hardcoded for now
     CORNERS = 25 #hardcoded for now
@@ -124,15 +133,16 @@ class MultientryPaperForm:
     template = None
     DATA_SEPARATOR = '$__sep__$'   
     QR_FIELD = 'QR_INFO'
+    T_SZ = (WIDTH-50*2, HEIGHT-250-50)
     
-    def __init__(self,qr_info,columns,rownames):
+    def __init__(self,qr_info,columns,rownames, header_height, row_header_width):
         ncol = len(columns)
         nrow = len(rownames)
         
         groups = []
         
         cornrs = self.corners(self.CORNERS,100,10)
-        self.t = Table(self.draw, 50,250,(self.WIDTH-50*2, self.HEIGHT-250-50),2,200,nrow,300,ncol)
+        self.t = Table(self.draw, 50,250,self.T_SZ,2,header_height,nrow,row_header_width,ncol)
         qr_coords = self.mk_qrcode(qr_info, 8, self.CORNERS*2, self.CORNERS*2) 
         qr_group = template_creator.create_qr(self.QR_FIELD, 
                                     (qr_coords[0]             , qr_coords[1]),
@@ -174,16 +184,10 @@ class MultientryPaperForm:
         text_file.close()
 
               
-    def __save_as_image(self,path): #"C:\\temp\\image.png"
+    def save_as_image(self,path): #"C:\\temp\\image.png"
         self.img.save(path, "PNG")
     
-    def save_as_pdf(self,path):
-            self.__save_as_image("C:\\temp\\image.png")          
-            pdf = FPDF(unit = "pt", format = [self.WIDTH, self.HEIGHT])
-            pdf.add_page()
-            pdf.image("C:\\temp\\image.png", 0, 0)
-            pdf.output(path, "F") #"C:\\temp\\form.pdf"
-    
+ 
     def corners(self, margin, size, width):
         self.draw.rectangle([(margin, margin), (self.WIDTH-margin, self.HEIGHT-margin)], outline = 0, width=width)
         self.draw.rectangle([(margin+size, 0), (self.WIDTH-margin-size, self.HEIGHT)], outline=1, fill=1)
@@ -248,6 +252,38 @@ class MultientryPaperForm:
             block+= math.floor((cc[1] if vertical else rc[1])/2)
         return coords
 
+
+
+class MultientryPaperForm:
+    wd = "C:\\temp\\"
+    npages = 1
+    
+    def __init__(self,qr_info,columns,rownames):
+        #todo: automatically
+        header_height = 200
+        row_header_width = 300
+        min_row_sz = 200
+
+        
+        
+        self.npages, max_nrows = Table.fit_count(header_height, MultientryPaperFormPage.T_SZ, min_row_sz, len(rownames))
+        for i in range(0,self.npages):
+            rows_lower = i*max_nrows
+            rows_upper = min(i*max_nrows+max_nrows,len(rownames))
+            page = MultientryPaperFormPage(qr_info,columns,rownames[rows_lower:rows_upper], header_height, row_header_width)
+            page.save_template(self.wd + "template%d.xtmpl" % i)
+            page.save_as_image(self.wd + "img%d.png" % i)
+            
+        self.make_pdf(self.wd + "form.pdf")
+
+    def make_pdf(self,path):   
+            pdf = FPDF(unit = "pt", format = [MultientryPaperFormPage.WIDTH, MultientryPaperFormPage.HEIGHT])
+            for img in glob.glob(self.wd + 'img*.png'):
+                print(img)
+                pdf.add_page()
+                pdf.image(img, 0, 0)
+                os.remove(img)
+            pdf.output(path, "F") #"C:\\temp\\form.pdf"
 
 #data '{0:010d}'.format(1)
 
