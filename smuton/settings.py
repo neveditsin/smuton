@@ -136,7 +136,10 @@ USE_TZ = True
 STATIC_URL = '/static/'
 MEDIA_ROOT = 'C:\\temp\\media\\'
 MEDIA_URL = 'media/'
- 
+
+FS_PATH = "C:\\temp\\fs\\formscanner-main-1.1.3.jar"
+
+
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]

@@ -13,6 +13,10 @@ import os
 from django.http import HttpResponse, Http404
 from django.core.files.base import ContentFile 
 
+from subprocess import check_call
+
+
+
 class SumbitFormView(TemplateView):
     template_name = "core/form_create.html"
     
@@ -70,7 +74,8 @@ class PaperFormView(FormView):
                 for chunk in content.chunks():
                     out.write(chunk)
                 out.close()
-                print(f)
+                print(settings.FS_PATH)                
+                print(check_call(["java", "-jar", settings.FS_PATH, os.path.join(wdir, "template0.xtmpl"), dst_dir]))
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
