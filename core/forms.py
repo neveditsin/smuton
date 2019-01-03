@@ -301,3 +301,7 @@ class JudgeResponseForm(forms.Form):
 
 class UploadFileForm(forms.Form):
     file = forms.FileField()
+    
+    
+class UploadMultiFileForm(forms.Form):
+    file_field = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}))

@@ -254,7 +254,7 @@ class MultientryPaperFormPage:
         return coords
 
 
-import os
+
 class MultientryPaperForm:
     npages = 1
     

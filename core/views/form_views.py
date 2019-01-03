@@ -1,6 +1,7 @@
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, FormView
 
 from ..models import Criteria, Scale, JudgingRound, ScaleEntry, Team, Judge
+from ..forms import UploadMultiFileForm
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.db import IntegrityError
@@ -10,6 +11,7 @@ from core.utils import csvutils
 from django.conf import settings 
 import os
 from django.http import HttpResponse, Http404
+from django.core.files.base import ContentFile 
 
 class SumbitFormView(TemplateView):
     template_name = "core/form_create.html"
@@ -46,12 +48,32 @@ class SumbitFormView(TemplateView):
         return reverse("core:judging_round_detail", kwargs={'pk':self.kwargs['jround_id']})
     
 
-class PaperFormView(TemplateView):
+class PaperFormView(FormView):
     template_name = "core/paper_form_create.html"
+    form_class = UploadMultiFileForm
+    
     
     def post(self, request, *args, **kwargs):
-        p = request.POST
-        return HttpResponseRedirect(self.get_success_url())
+        self.jr = JudgingRound.objects.get(pk=kwargs['jround_id'])
+        wdir = os.path.join(settings.MEDIA_ROOT, str(self.jr.pk))
+        dst_dir = os.path.join(wdir, "scanned") 
+        if not os.path.exists(dst_dir):
+                os.makedirs(dst_dir)
+                
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        files = request.FILES.getlist('file_field')
+        if form.is_valid():
+            for f in files:
+                out = open(os.path.join(dst_dir, str(f)), 'wb+')
+                content = ContentFile(f.read())
+                for chunk in content.chunks():
+                    out.write(chunk)
+                out.close()
+                print(f)
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
 
     def get(self, request, *args, **kwargs):
         self.jr = JudgingRound.objects.get(pk=kwargs['jround_id']) 
@@ -98,9 +120,14 @@ class PaperFormView(TemplateView):
     
     def get_context_data(self, *args, **kwargs):
         ret = super(PaperFormView, self).get_context_data(*args, **kwargs)
-        ret['jr'] = self.jr  
+        ret['jr'] = self.jr
+        ret['file_form'] = UploadMultiFileForm()
         return ret
     
         
     def get_success_url(self):
-        return reverse("core:judging_round_detail", kwargs={'pk':self.kwargs['jround_id']})
+        return reverse("core:paper_form", kwargs={'jround_id':self.kwargs['jround_id']})
+    
+
+
+    

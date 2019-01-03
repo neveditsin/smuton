@@ -7,5 +7,10 @@
 	<h1>Paper Forms</h1>
     <h3><a href={% url "core:paper_form" jr.pk %}?download=yes>Download Paper Forms</a></h3>
     
+    <form action={% url "core:paper_form" jr.pk %} method="post" enctype="multipart/form-data">{% csrf_token %} 
+    <p>Upload Scanned Forms:</p>
+   	{{file_form.as_p}}
+   	<input type="submit" value="Upload" />
+	</form>
 
 {% endblock %}
