@@ -1,6 +1,6 @@
 from django.views.generic import TemplateView
 
-from ..models import Criteria, Scale, JudgingRound, ScaleEntry, Team
+from ..models import Criteria, Scale, JudgingRound, ScaleEntry, Team, Judge, Hackathon
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.db import IntegrityError
@@ -43,7 +43,8 @@ class SumbitFormView(TemplateView):
     def get_success_url(self):
         return reverse("core:judging_round_detail", kwargs={'pk':self.kwargs['jround_id']})
     
-    
+from django.conf import settings 
+import os
 class PaperFormView(TemplateView):
     template_name = "core/paper_form_create.html"
     
@@ -62,13 +63,25 @@ class PaperFormView(TemplateView):
             
         teams = list(Team.objects.filter(hackathon = self.jr.hackathon).all().values_list('name', flat=True))
         
-        judge_id = 5
-        qr_info = str(self.jr.pk)+";"+str(judge_id)
-        form = MultientryPaperForm(qr_info,  columns, teams)
 
 
         
-        csvutils.fs_csv_parse("C:\\temp\\scan\\results_20181210172459.csv")
+        wdir = os.path.join(settings.MEDIA_ROOT, str(self.jr.pk))
+        print(wdir)
+        if not os.path.exists(wdir):
+            os.makedirs(wdir)
+            
+        evaluators = Judge.objects.filter(hackathon=self.jr.hackathon).all()
+        
+        for ev in evaluators:
+            qr_info = str(self.jr.pk)+";"+str(ev.pk)
+            MultientryPaperForm(wdir,ev.name, str(ev.pk), qr_info, columns, teams)
+            
+        MultientryPaperForm.make_pdf(wdir, os.path.join(wdir, "form%d.pdf" % self.jr.pk));
+
+
+        
+        #csvutils.fs_csv_parse("C:\\temp\\scan\\results_20181210172459.csv")
 
         return super(PaperFormView, self).get(request, *args, **kwargs)
     

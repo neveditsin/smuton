@@ -28,12 +28,14 @@ def fs_csv_parse(path):
             
        
     print(qr_data)
-#     
+     
 #     for cmt in criteria_team_mark:
 #         r_team = models.Team.objects.filter()
 #         r_crit = models.Criteria.objects.filter(judging_round = r_round).get(name=row['criterion'])
-#         r_mark = models.ScaleEntry.objects.filter(scale=r_crit.scale.id).\
-#                                                 get(entry=row['value'])
+#         r_mark = models.ScaleEntry.objects.filter(scale=r_crit.scale.id).get(entry=row['value'])
+#         print(r_team)
+#         print(r_crit)
+#         print(r_mark)
 
 
 def import_csv_simple(file, j_round, override):

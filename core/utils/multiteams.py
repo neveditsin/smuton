@@ -135,7 +135,7 @@ class MultientryPaperFormPage:
     QR_FIELD = 'QR_INFO'
     T_SZ = (WIDTH-50*2, HEIGHT-250-50)
     
-    def __init__(self,qr_info,columns,rownames, header_height, row_header_width):
+    def __init__(self,qr_info,columns,rownames, header_height, row_header_width, title):
         ncol = len(columns)
         nrow = len(rownames)
         
@@ -168,7 +168,8 @@ class MultientryPaperFormPage:
                 groups.append(template_creator.create_group(header+self.DATA_SEPARATOR+row_val, resps))
                 col_idx +=1
             row_idx+=1
-
+        #todo position should not be hardcoded
+        self.draw_text_in_box(title, self.font, (800, 150), 10)
         self.template = template_creator.create_template(cornrs[0], cornrs[1], cornrs[2], cornrs[3],groups,self.FIELD_SZ)
 
     def draw_text_in_box(self, text, font, box, margin):
@@ -253,16 +254,16 @@ class MultientryPaperFormPage:
         return coords
 
 
-
+import os
 class MultientryPaperForm:
-    wd = "C:\\temp\\"
     npages = 1
     
-    def __init__(self,qr_info,columns,rownames):
+    def __init__(self, wd, title, fileprefix, qr_info, columns, rownames):
         #todo: automatically
         header_height = 200
         row_header_width = 300
         min_row_sz = 200
+        self.wd = wd
 
         
         
@@ -270,20 +271,20 @@ class MultientryPaperForm:
         for i in range(0,self.npages):
             rows_lower = i*max_nrows
             rows_upper = min(i*max_nrows+max_nrows,len(rownames))
-            page = MultientryPaperFormPage(qr_info,columns,rownames[rows_lower:rows_upper], header_height, row_header_width)
-            page.save_template(self.wd + "template%d.xtmpl" % i)
-            page.save_as_image(self.wd + "img%d.png" % i)
+            page = MultientryPaperFormPage(qr_info,columns,rownames[rows_lower:rows_upper], header_height, row_header_width, title)
+            page.save_template(os.path.join(self.wd, "template%d.xtmpl" % i) )
+            page.save_as_image(os.path.join(self.wd, fileprefix + "_img%d.png" % i))
             
-        self.make_pdf(self.wd + "form.pdf")
-
-    def make_pdf(self,path):   
+        #self.make_pdf(self.wd + "form.pdf")
+    
+    @staticmethod
+    def make_pdf(wd, outpath):   
             pdf = FPDF(unit = "pt", format = [MultientryPaperFormPage.WIDTH, MultientryPaperFormPage.HEIGHT])
-            for img in glob.glob(self.wd + 'img*.png'):
-                print(img)
+            for img in glob.glob(os.path.join(wd, '*_img*.png')):
+                #print(img)
                 pdf.add_page()
                 pdf.image(img, 0, 0)
-                os.remove(img)
-            pdf.output(path, "F") #"C:\\temp\\form.pdf"
+            pdf.output(outpath, "F") #"C:\\temp\\form.pdf"
 
 #data '{0:010d}'.format(1)
 
