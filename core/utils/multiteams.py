@@ -268,6 +268,9 @@ class MultientryPaperForm:
         
         
         self.npages, max_nrows = Table.fit_count(header_height, MultientryPaperFormPage.T_SZ, min_row_sz, len(rownames))
+        if self.npages > 1:
+            raise Exception("Not implemented for multiple pages")
+        
         for i in range(0,self.npages):
             rows_lower = i*max_nrows
             rows_upper = min(i*max_nrows+max_nrows,len(rownames))

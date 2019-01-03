@@ -1,13 +1,15 @@
 from django.views.generic import TemplateView
 
-from ..models import Criteria, Scale, JudgingRound, ScaleEntry, Team, Judge, Hackathon
+from ..models import Criteria, Scale, JudgingRound, ScaleEntry, Team, Judge
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.db import IntegrityError
 from django.contrib import messages
 from ..utils.multiteams import MultientryPaperForm
 from core.utils import csvutils
-
+from django.conf import settings 
+import os
+from django.http import HttpResponse, Http404
 
 class SumbitFormView(TemplateView):
     template_name = "core/form_create.html"
@@ -43,8 +45,7 @@ class SumbitFormView(TemplateView):
     def get_success_url(self):
         return reverse("core:judging_round_detail", kwargs={'pk':self.kwargs['jround_id']})
     
-from django.conf import settings 
-import os
+
 class PaperFormView(TemplateView):
     template_name = "core/paper_form_create.html"
     
@@ -55,29 +56,39 @@ class PaperFormView(TemplateView):
     def get(self, request, *args, **kwargs):
         self.jr = JudgingRound.objects.get(pk=kwargs['jround_id']) 
         
-        crs = Criteria.objects.filter(judging_round=self.jr).all()
-        columns = {}
-        for cr in crs:
-            scale_entries = list(ScaleEntry.objects.filter(scale=cr.scale).all().values_list('entry', flat=True))
-            columns[cr.name] = scale_entries
+        if request.GET.get('download', 'no') == "yes":
+            crs = Criteria.objects.filter(judging_round=self.jr).all()
+            columns = {}
+            for cr in crs:
+                scale_entries = list(ScaleEntry.objects.filter(scale=cr.scale).all().values_list('entry', flat=True))
+                columns[cr.name] = scale_entries
+                
+            teams = list(Team.objects.filter(hackathon = self.jr.hackathon).all().values_list('name', flat=True))
             
-        teams = list(Team.objects.filter(hackathon = self.jr.hackathon).all().values_list('name', flat=True))
-        
+    
+    
+            
+            wdir = os.path.join(settings.MEDIA_ROOT, str(self.jr.pk))
+            print(wdir)
+            if not os.path.exists(wdir):
+                os.makedirs(wdir)
+                
+            evaluators = Judge.objects.filter(hackathon=self.jr.hackathon).all()
+            
+            for ev in evaluators:
+                qr_info = str(self.jr.pk)+";"+str(ev.pk)
+                MultientryPaperForm(wdir,ev.name, str(ev.pk), qr_info, columns, teams)
+            
+            pdf_path = os.path.join(wdir, "form%d.pdf" % self.jr.pk)    
+            MultientryPaperForm.make_pdf(wdir, pdf_path)
+            
+            if os.path.exists(pdf_path):
+                with open(pdf_path, 'rb') as fh:
+                    response = HttpResponse(fh.read(), content_type="application/vnd.ms-excel")
+                    response['Content-Disposition'] = 'inline; filename=' + os.path.basename(pdf_path)
+                    return response
+            raise Http404  
 
-
-        
-        wdir = os.path.join(settings.MEDIA_ROOT, str(self.jr.pk))
-        print(wdir)
-        if not os.path.exists(wdir):
-            os.makedirs(wdir)
-            
-        evaluators = Judge.objects.filter(hackathon=self.jr.hackathon).all()
-        
-        for ev in evaluators:
-            qr_info = str(self.jr.pk)+";"+str(ev.pk)
-            MultientryPaperForm(wdir,ev.name, str(ev.pk), qr_info, columns, teams)
-            
-        MultientryPaperForm.make_pdf(wdir, os.path.join(wdir, "form%d.pdf" % self.jr.pk));
 
 
         
@@ -85,8 +96,9 @@ class PaperFormView(TemplateView):
 
         return super(PaperFormView, self).get(request, *args, **kwargs)
     
-    def get_context_data(self, *args, **kwargs):        
+    def get_context_data(self, *args, **kwargs):
         ret = super(PaperFormView, self).get_context_data(*args, **kwargs)
+        ret['jr'] = self.jr  
         return ret
     
         

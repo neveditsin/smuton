@@ -4,7 +4,8 @@
 {% endblock %}
 
 {% block content %}
-    <h3>Download paper forms</h3>
+	<h1>Paper Forms</h1>
+    <h3><a href={% url "core:paper_form" jr.pk %}?download=yes>Download Paper Forms</a></h3>
     
 
 {% endblock %}
