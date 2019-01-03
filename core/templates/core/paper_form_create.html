@@ -12,5 +12,14 @@
    	{{file_form.as_p}}
    	<input type="submit" value="Upload" />
 	</form>
+	
+	<p>Current files:</p>
+	{% for f in files_list %}
+		<a>{{f}}</a>
+		<br/>
+	{% endfor %}
+	
+	
+	<h3><a href={% url "core:pf_results_preview" jr.pk %}>Preview Answers</a></h3>
 
 {% endblock %}

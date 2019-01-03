@@ -1,5 +1,5 @@
 from core import models
-from core.utils.multiteams import MultientryPaperForm, MultientryPaperFormPage
+from core.utils.multiteams import MultientryPaperFormPage
 import pandas as pd
 
 
@@ -15,10 +15,13 @@ def fs_csv_parse(path):
     
     df = df.T
     
+    print(df)
+    
     criteria_team_mark = []
     for index, row in df.iterrows():
-        if(row[0] == MultientryPaperFormPage.QR_FIELD):
+        if(row[0] == MultientryPaperFormPage.QR_FIELD + ".id"):
             qr_data = row[1]
+            print(qr_data)
         else:
             cr_team = row[0].split(MultientryPaperFormPage.DATA_SEPARATOR)
             cr = cr_team[0]
@@ -29,13 +32,13 @@ def fs_csv_parse(path):
        
     print(qr_data)
      
-#     for cmt in criteria_team_mark:
-#         r_team = models.Team.objects.filter()
-#         r_crit = models.Criteria.objects.filter(judging_round = r_round).get(name=row['criterion'])
-#         r_mark = models.ScaleEntry.objects.filter(scale=r_crit.scale.id).get(entry=row['value'])
-#         print(r_team)
-#         print(r_crit)
-#         print(r_mark)
+    for cmt in criteria_team_mark:
+        r_team = models.Team.objects.filter()
+        r_crit = models.Criteria.objects.filter(judging_round = 48).get(name=row['criterion'])
+        r_mark = models.ScaleEntry.objects.filter(scale=r_crit.scale.id).get(entry=row['value'])
+        print(r_team)
+        print(r_crit)
+        print(r_mark)
 
 
 def import_csv_simple(file, j_round, override):

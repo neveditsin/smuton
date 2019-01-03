@@ -14,8 +14,9 @@ from django.http import HttpResponse, Http404
 from django.core.files.base import ContentFile 
 
 from subprocess import check_call
-
-
+import shutil
+from os.path import isfile, join
+import re
 
 class SumbitFormView(TemplateView):
     template_name = "core/form_create.html"
@@ -55,14 +56,18 @@ class SumbitFormView(TemplateView):
 class PaperFormView(FormView):
     template_name = "core/paper_form_create.html"
     form_class = UploadMultiFileForm
-    
+    SCAN_DIR = 'scanned'
     
     def post(self, request, *args, **kwargs):
         self.jr = JudgingRound.objects.get(pk=kwargs['jround_id'])
         wdir = os.path.join(settings.MEDIA_ROOT, str(self.jr.pk))
-        dst_dir = os.path.join(wdir, "scanned") 
-        if not os.path.exists(dst_dir):
-                os.makedirs(dst_dir)
+        dst_dir = os.path.join(wdir, self.SCAN_DIR)
+        
+        if os.path.exists(dst_dir):
+            shutil.rmtree(dst_dir)
+        
+        os.makedirs(dst_dir)
+        
                 
         form_class = self.get_form_class()
         form = self.get_form(form_class)
@@ -73,9 +78,8 @@ class PaperFormView(FormView):
                 content = ContentFile(f.read())
                 for chunk in content.chunks():
                     out.write(chunk)
-                out.close()
-                print(settings.FS_PATH)                
-                print(check_call(["java", "-jar", settings.FS_PATH, os.path.join(wdir, "template0.xtmpl"), dst_dir]))
+                out.close()               
+                
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
@@ -119,14 +123,61 @@ class PaperFormView(FormView):
 
 
         
-        #csvutils.fs_csv_parse("C:\\temp\\scan\\results_20181210172459.csv")
+        
 
         return super(PaperFormView, self).get(request, *args, **kwargs)
+    
     
     def get_context_data(self, *args, **kwargs):
         ret = super(PaperFormView, self).get_context_data(*args, **kwargs)
         ret['jr'] = self.jr
         ret['file_form'] = UploadMultiFileForm()
+        img_path = os.path.join(settings.MEDIA_ROOT, str(self.jr.pk), self.SCAN_DIR)
+
+        list = [f for f in os.listdir(img_path) if (isfile(join(img_path, f)) and bool(re.search('jpg', f)))]
+        ret['files_list'] = list
+        return ret
+    
+        
+    def get_success_url(self):
+        return reverse("core:paper_form", kwargs={'jround_id':self.kwargs['jround_id']})
+    
+    
+    
+class PaperFormResultsPreview(TemplateView):
+    template_name = "core/paper_form_res_preview.html"
+     
+
+    def get(self, request, *args, **kwargs):
+        self.jr = JudgingRound.objects.get(pk=kwargs['jround_id']) 
+        wdir = os.path.join(settings.MEDIA_ROOT, str(self.jr.pk))
+        img_path = os.path.join(settings.MEDIA_ROOT, str(self.jr.pk), PaperFormView.SCAN_DIR)
+        
+        #remove old results files
+        for f in os.listdir(img_path):
+            if re.search("results_.*.csv", f):
+                os.remove(os.path.join(img_path, f))
+        
+        if (check_call(["java", "-jar", settings.FS_PATH, os.path.join(wdir, "template0.xtmpl"), img_path]) == 0):
+            for f in os.listdir(img_path):
+                if re.search("results_.*.csv", f):
+                    res_path = join(img_path, f)
+                    #csvutils.fs_csv_parse(res_path)
+                    
+        
+
+        
+        return super(PaperFormResultsPreview, self).get(request, *args, **kwargs)
+    
+    
+    def get_context_data(self, *args, **kwargs):
+        ret = super(PaperFormResultsPreview, self).get_context_data(*args, **kwargs)
+        ret['jr'] = self.jr
+        ret['file_form'] = UploadMultiFileForm()
+        img_path = os.path.join(settings.MEDIA_ROOT, str(self.jr.pk), PaperFormView.SCAN_DIR)
+
+        list = [f for f in os.listdir(img_path) if (isfile(join(img_path, f)) and bool(re.search('jpg', f)))]
+        ret['files_list'] = list
         return ret
     
         
