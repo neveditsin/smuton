@@ -5,6 +5,8 @@
 
 {% block content %}
 	<h1>Paper Forms</h1>
+
+	
     <h3><a href={% url "core:paper_form" jr.pk %}?download=yes>Download Paper Forms</a></h3>
     
     <form action={% url "core:paper_form" jr.pk %} method="post" enctype="multipart/form-data">{% csrf_token %} 
@@ -21,5 +23,8 @@
 	
 	
 	<h3><a href={% url "core:pf_results_preview" jr.pk %}>Preview Answers</a></h3>
+	
+	<a href={% url "core:judging_round_detail" jr.pk %}>Go back</a>
+	
 
 {% endblock %}
