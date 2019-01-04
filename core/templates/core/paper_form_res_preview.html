@@ -7,8 +7,11 @@
 {% block content %}
     <h1>Results Preview</h1>
     <div>
-    {{jtcm}}
+    {{jtcm|safe}}
     </div>
+
+    <a href={% url "core:pf_results_preview" jr.pk %}?upload=yes>Upload</a>
+    <br/>
     <a href={% url "core:paper_form" jr.pk %}>Go back</a>
 
 {% endblock %}

@@ -1,6 +1,6 @@
 from django.views.generic import TemplateView, FormView
 
-from ..models import Criteria, Scale, JudgingRound, ScaleEntry, Team, Judge
+from ..models import Criteria, Scale, JudgingRound, ScaleEntry, Team, Judge, JudgeResponse
 from ..forms import UploadMultiFileForm
 from django.urls import reverse
 from django.http import HttpResponseRedirect
@@ -17,6 +17,8 @@ from subprocess import check_call
 import shutil
 from os.path import isfile, join
 import re
+import pandas as pd
+
 
 class SumbitFormView(TemplateView):
     template_name = "core/form_create.html"
@@ -107,7 +109,7 @@ class PaperFormView(FormView):
             evaluators = Judge.objects.filter(hackathon=self.jr.hackathon).all()
             
             for ev in evaluators:
-                qr_info = str(self.jr.pk)+";"+str(ev.pk)
+                qr_info = str(ev.pk)
                 MultientryPaperForm(wdir,ev.name, str(ev.pk), qr_info, columns, teams)
             
             pdf_path = os.path.join(wdir, "form%d.pdf" % self.jr.pk)    
@@ -150,8 +152,9 @@ class PaperFormResultsPreview(TemplateView):
 
     def get(self, request, *args, **kwargs):
         self.jr = JudgingRound.objects.get(pk=kwargs['jround_id']) 
+        
         wdir = os.path.join(settings.MEDIA_ROOT, str(self.jr.pk))
-        img_path = os.path.join(settings.MEDIA_ROOT, str(self.jr.pk), PaperFormView.SCAN_DIR)
+        img_path = os.path.join(settings.MEDIA_ROOT, str(self.jr.pk), PaperFormView.SCAN_DIR)        
         
         #remove old results files
         for f in os.listdir(img_path):
@@ -165,6 +168,18 @@ class PaperFormResultsPreview(TemplateView):
                     self.jtcm = csvutils.fs_csv_parse(res_path, self.jr)
                     
         
+        
+        if request.GET.get('upload', 'no') == "yes":
+            for rsp in self.jtcm:
+                JudgeResponse.objects.create(
+                            round = self.jr,
+                            team = rsp[1],
+                            judge = rsp[0],
+                            criterion = rsp[2],
+                            mark = rsp[3],
+                            )
+            return HttpResponseRedirect(reverse("core:judging_round_detail", kwargs={'pk':self.jr.pk}))
+        
 
         
         return super(PaperFormResultsPreview, self).get(request, *args, **kwargs)
@@ -173,8 +188,22 @@ class PaperFormResultsPreview(TemplateView):
     def get_context_data(self, *args, **kwargs):
         ret = super(PaperFormResultsPreview, self).get_context_data(*args, **kwargs)
         ret['jr'] = self.jr
+        
+        df = pd.DataFrame.from_records(self.jtcm)
+        df.columns = ['judge_name', 'team_name', 'criteria', 'mark']
+        df['judge_name'] = df['judge_name'].astype('str') 
+        df['team_name'] = df['team_name'].astype('str') 
+        df['criteria'] = df['criteria'].astype('str')
+        df['mark'] = df['mark'].astype('str')
+        
+        pt = pd.DataFrame(df.pivot_table(index=['judge_name','team_name'], 
+                                 columns='criteria', 
+                                 values='mark', 
+                                 aggfunc='first').to_records())
 
-        ret['jtcm'] = self.jtcm
+        ret['jtcm'] = pt.to_html();
+        
+        
         
         
         return ret

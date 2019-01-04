@@ -15,30 +15,32 @@ def fs_csv_parse(path, jround):
     
     df = df.T
     
-    print(df)
     
-    criteria_team_mark = []
-    for index, row in df.iterrows():
+    criteria_team_marks = []
+    for index, row in df.iterrows():     
         if(row[0] == MultientryPaperFormPage.QR_FIELD + ".id"):
-            qr_data = row[1]
-            print(qr_data)
+            qr_data = row[1:]
         else:
             cr_team = row[0].split(MultientryPaperFormPage.DATA_SEPARATOR)
             cr = cr_team[0]
             team = cr_team[1].replace(".sources", "")
-            mark = row[1]
-            criteria_team_mark.append((cr, team, mark))
+            marks = row[1:]        
+            criteria_team_marks.append((cr, team, marks))
             
-       
-    print(qr_data)
-    #get judge
+            
     
-    jtcm_db = [] 
-    for ctm in criteria_team_mark:
-        r_team = models.Team.objects.filter(name = ctm[1]).get()
-        r_crit = models.Criteria.objects.filter(judging_round = jround).get(name=ctm[0])
-        r_mark = models.ScaleEntry.objects.filter(scale=r_crit.scale.id).get(entry=ctm[2])
-        jtcm_db.append((r_team, r_crit, r_mark))
+    jtcm_db = []
+    i = 1 #marks are enumerated from 1
+    for jid in qr_data:
+        #get judge
+        r_judge = models.Judge.objects.filter(pk = jid).get()
+        for ctm in criteria_team_marks:
+            r_team = models.Team.objects.filter(name = ctm[1]).get()
+            r_crit = models.Criteria.objects.filter(judging_round = jround).get(name=ctm[0])
+            r_mark = models.ScaleEntry.objects.filter(scale=r_crit.scale.id).get(entry=ctm[2][i])
+            jtcm_db.append((r_judge, r_team, r_crit, r_mark))
+        i+=1     
+
         
     return jtcm_db
 
