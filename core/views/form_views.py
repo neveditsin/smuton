@@ -162,7 +162,7 @@ class PaperFormResultsPreview(TemplateView):
             for f in os.listdir(img_path):
                 if re.search("results_.*.csv", f):
                     res_path = join(img_path, f)
-                    #csvutils.fs_csv_parse(res_path)
+                    self.jtcm = csvutils.fs_csv_parse(res_path, self.jr)
                     
         
 
@@ -173,11 +173,10 @@ class PaperFormResultsPreview(TemplateView):
     def get_context_data(self, *args, **kwargs):
         ret = super(PaperFormResultsPreview, self).get_context_data(*args, **kwargs)
         ret['jr'] = self.jr
-        ret['file_form'] = UploadMultiFileForm()
-        img_path = os.path.join(settings.MEDIA_ROOT, str(self.jr.pk), PaperFormView.SCAN_DIR)
 
-        list = [f for f in os.listdir(img_path) if (isfile(join(img_path, f)) and bool(re.search('jpg', f)))]
-        ret['files_list'] = list
+        ret['jtcm'] = self.jtcm
+        
+        
         return ret
     
         

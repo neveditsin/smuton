@@ -137,7 +137,7 @@ STATIC_URL = '/static/'
 MEDIA_ROOT = 'C:\\temp\\media\\'
 MEDIA_URL = 'media/'
 
-FS_PATH = "C:\\temp\\fs\\formscanner-main-1.1.3.jar"
+FS_PATH = "C:\\temp\\fs\\formscanner-main-1.1.4.jar"
 
 
 STATICFILES_DIRS = [

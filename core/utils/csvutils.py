@@ -3,7 +3,7 @@ from core.utils.multiteams import MultientryPaperFormPage
 import pandas as pd
 
 
-def fs_csv_parse(path):
+def fs_csv_parse(path, jround):
  
     data = pd.read_csv(path, sep = ';', header = None)
     df = data
@@ -31,14 +31,16 @@ def fs_csv_parse(path):
             
        
     print(qr_data)
-     
-    for cmt in criteria_team_mark:
-        r_team = models.Team.objects.filter()
-        r_crit = models.Criteria.objects.filter(judging_round = 48).get(name=row['criterion'])
-        r_mark = models.ScaleEntry.objects.filter(scale=r_crit.scale.id).get(entry=row['value'])
-        print(r_team)
-        print(r_crit)
-        print(r_mark)
+    #get judge
+    
+    jtcm_db = [] 
+    for ctm in criteria_team_mark:
+        r_team = models.Team.objects.filter(name = ctm[1]).get()
+        r_crit = models.Criteria.objects.filter(judging_round = jround).get(name=ctm[0])
+        r_mark = models.ScaleEntry.objects.filter(scale=r_crit.scale.id).get(entry=ctm[2])
+        jtcm_db.append((r_team, r_crit, r_mark))
+        
+    return jtcm_db
 
 
 def import_csv_simple(file, j_round, override):
