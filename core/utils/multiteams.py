@@ -8,6 +8,7 @@ from fpdf import FPDF
 
 ##testing only
 import sys
+
 sys.path.append('..')
 ##testing only END
 from core.utils import template_creator
@@ -53,26 +54,26 @@ class Table:
         
         self.row_coords.append((y+header_height,row_sz))
 
-        self.rowname_boxes.append((x, y+header_height, x+row_header_width, y+header_height+row_sz))
+        self.rowname_boxes.append((x, y+header_height, row_header_width, header_height))
         for i in range(1, nrow):
             dy = math.floor(row_sz*i)
             _y = (y+header_height)+dy
             self.draw.line(((x,_y),(x+t_sz[0],_y)), fill=0, width=line_wdth)
             self.row_coords.append((_y,row_sz))
-            self.rowname_boxes.append((x, _y, x+row_header_width, _y+row_sz))
+            self.rowname_boxes.append((x, _y, row_header_width, row_sz))
          
 
         self.draw.line(((x+row_header_width,y),(x+row_header_width, y+t_sz[1])), fill=0, width=line_wdth)
         
         col_sz = math.floor((t_sz[0]-row_header_width)/ncol)
         self.col_coords.append((x+row_header_width,col_sz))
-        self.colname_boxes.append((x+row_header_width, y, x+row_header_width+col_sz, y+header_height))        
+        self.colname_boxes.append((x+row_header_width, y, col_sz, header_height))        
         for i in range(1, ncol):
             dx = math.floor(col_sz*i)
             _x = x+row_header_width+dx
             self.draw.line(((_x,y),(_x,y+t_sz[1])), fill=0, width=line_wdth)
             self.col_coords.append((_x,col_sz))
-            self.colname_boxes.append((_x, y, _x+col_sz, y+header_height))
+            self.colname_boxes.append((_x, y, col_sz, header_height))
 
 
 class Field:
@@ -158,7 +159,7 @@ class MultientryPaperFormPage:
             self.draw_text_in_box(row_val, self.font, self.t.rowname_boxes[row_idx], 10)
             col_idx = 0
             for header, entries in columns.items():
-                self.draw_text_in_box(header, self.font, self.t.colname_boxes[col_idx], 10)
+                self.draw_text_in_box(header, self.font, self.t.colname_boxes[col_idx], 10) #header
                 cc = self.t.col_coords[col_idx]                
                 coords = self.draw_entries(rc,cc,True, 15, 10, 30,entries)
                 resps = []        
@@ -169,12 +170,55 @@ class MultientryPaperFormPage:
                 col_idx +=1
             row_idx+=1
         #todo position should not be hardcoded
-        self.draw_text_in_box(title, self.font, (800, 150), 10)
+        self.draw_text_in_box(title, self.font, (800, 50, 500, 500), 10)
         self.template = template_creator.create_template(cornrs[0], cornrs[1], cornrs[2], cornrs[3],groups,self.FIELD_SZ)
 
+
+    
     def draw_text_in_box(self, text, font, box, margin):
-        #TODO FIT
-        self.draw.text((box[0]+margin, box[1]+margin), text, font=font, fill=0)
+      
+        if(len(box) > 2):
+            tsz = self.draw.textsize(text, font=font)
+            box_width = box[2]-2*margin
+            if(tsz[0] > box_width):
+                #print(text)
+                nlines = math.ceil(tsz[0]/box[2])
+                approx_textlen = math.ceil(len(text)/nlines)
+                start_idx = 0
+                
+                for ln in range(0,nlines):              
+                    end_idx = self.fit_text(text, start_idx, approx_textlen, font, box_width)                   
+                    
+                    
+                    self.draw.text((box[0]+margin, box[1]+margin+ln*tsz[1]), \
+                                   text[start_idx:end_idx] + ("-" if ln < nlines-1 else ""),\
+                                   font=font, fill=0)
+                    start_idx = end_idx
+            else:
+                self.draw.text((box[0]+margin, box[1]+margin), text, font=font, fill=0)
+        else:
+            self.draw.text((box[0]+margin, box[1]+margin), text, font=font, fill=0)        
+    
+    def fit_text(self, text, start_idx, approx_textlen, font, box_width):
+        end_idx = start_idx + approx_textlen;
+        sz = self.draw.textsize(text[start_idx:end_idx], font=font) \
+                + self.draw.textsize("-", font=font)
+                
+        while(sz[0] < box_width):
+            end_idx+=1
+            if(end_idx >= len(text)):
+                break
+            sz = self.draw.textsize(text[start_idx:end_idx], font=font) \
+                + self.draw.textsize("-", font=font)
+       
+        while(sz[0] > box_width):       
+            end_idx-=1
+            sz = self.draw.textsize(text[start_idx:end_idx], font=font) \
+                + self.draw.textsize("-", font=font)
+
+        
+        return end_idx
+       
 
     def get_template(self):
         return self.template
@@ -274,7 +318,8 @@ class MultientryPaperForm:
         for i in range(0,self.npages):
             rows_lower = i*max_nrows
             rows_upper = min(i*max_nrows+max_nrows,len(rownames))
-            page = MultientryPaperFormPage(qr_info,columns,rownames[rows_lower:rows_upper], header_height, row_header_width, title)
+            page = MultientryPaperFormPage(qr_info,columns,rownames[rows_lower:rows_upper], \
+                                           header_height, row_header_width, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
             page.save_template(os.path.join(self.wd, "template%d.xtmpl" % i) )
             page.save_as_image(os.path.join(self.wd, fileprefix + "_img%d.png" % i))
             
