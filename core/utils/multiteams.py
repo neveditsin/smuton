@@ -127,16 +127,17 @@ class MultientryPaperFormPage:
     HEIGHT = 2550 #hardcoded for now
     CORNERS = 25 #hardcoded for now
     FIELD_SZ = 30
+    FONT = "arial.ttf";
     img = Image.new('1', (WIDTH, HEIGHT), 1)
     draw = ImageDraw.Draw(img)
-    font = ImageFont.truetype(font="arial.ttf", size=FIELD_SZ)
+    font = ImageFont.truetype(font=FONT, size=FIELD_SZ)
     t = None
     template = None
     DATA_SEPARATOR = '$__sep__$'   
     QR_FIELD = 'QR_INFO'
     T_SZ = (WIDTH-50*2, HEIGHT-250-50)
     
-    def __init__(self,qr_info,columns,rownames, header_height, row_header_width, title):
+    def __init__(self,qr_info,columns,rownames, header_height, row_header_width, labels):
         ncol = len(columns)
         nrow = len(rownames)
         
@@ -161,7 +162,7 @@ class MultientryPaperFormPage:
             for header, entries in columns.items():
                 self.draw_text_in_box(header, self.font, self.t.colname_boxes[col_idx], 10) #header
                 cc = self.t.col_coords[col_idx]                
-                coords = self.draw_entries(rc,cc,True, 15, 10, 30,entries)
+                coords = self.draw_entries(rc,cc,False, 15, 10, 30,entries)
                 resps = []        
                 for c in coords:
                     resps.append(template_creator.create_resp(c[0], c[1][0], c[1][1]))
@@ -169,8 +170,20 @@ class MultientryPaperFormPage:
                 groups.append(template_creator.create_group(header+self.DATA_SEPARATOR+row_val, resps))
                 col_idx +=1
             row_idx+=1
-        #todo position should not be hardcoded
-        self.draw_text_in_box(title, self.font, (800, 50, 500, 500), 10)
+        
+        
+        #name of event
+        self.draw_text_in_box(labels[0], ImageFont.truetype(font=self.FONT, size=50), \
+                              (qr_coords[2]+50, qr_coords[0], 2500, 100), 0)
+        
+        self.draw_text_in_box("Evaluator: " + labels[1] + " (ID: " + labels[2] + ")",\
+                              ImageFont.truetype(font=self.FONT, size=35), \
+                              (qr_coords[2]+50, qr_coords[0]+100, 2500, 100), 0) 
+        
+        self.draw_text_in_box("Page 1 of 1",\
+                              ImageFont.truetype(font=self.FONT, size=35), \
+                              (qr_coords[2]+50, qr_coords[0]+135, 2500, 100), 0) 
+                      
         self.template = template_creator.create_template(cornrs[0], cornrs[1], cornrs[2], cornrs[3],groups,self.FIELD_SZ)
 
 
@@ -257,6 +270,7 @@ class MultientryPaperFormPage:
     def max_entries(self, avail, obj_sz, min_dist):
         return math.floor(avail/(obj_sz+min_dist))
     
+    #currently only max_entries*2 supported. Can be done for more entries later if necessary
     def __break_entries(self, n_entries, max_entries):
         if(n_entries > max_entries*2):
             raise ValueError('NCE001: Connot fit entries into cell with current configuration')
@@ -271,7 +285,7 @@ class MultientryPaperFormPage:
             f = Field(self.font, self.draw, fld_sz, 'L', entries_list)
             obj_sz=f.get_size()[1]
         else:
-            f = Field(self.font, fld_sz, 'L', entries_list)
+            f = Field(self.font, self.draw, fld_sz, 'L', entries_list)
             obj_sz=f.get_size()[0]  
             
         max_ent = self.max_entries(sz,obj_sz,min_dist)
@@ -280,8 +294,10 @@ class MultientryPaperFormPage:
             ent = self.__break_entries(n_entries, max_ent)              
         else:
             ent = [n_entries]
-                    
-        block = 0
+            
+        
+        centering = math.floor((cc[1] if vertical else rc[1])/(len(ent)+1))          
+        block = centering
         entry_idx = 0
         coords = []
         for nent in ent:    
@@ -294,7 +310,7 @@ class MultientryPaperFormPage:
                     coords.append((entries_list[entry_idx], f.do_draw(entries_list[entry_idx], cc[0]+offset+(dist+obj_sz)*i, rc[0]+margin+block)))
                 entry_idx+=1
         
-            block+= math.floor((cc[1] if vertical else rc[1])/2)
+            block+= centering
         return coords
 
 
@@ -302,7 +318,7 @@ class MultientryPaperFormPage:
 class MultientryPaperForm:
     npages = 1
     
-    def __init__(self, wd, title, fileprefix, qr_info, columns, rownames):
+    def __init__(self, wd, title, ev_name, ev_id, fileprefix, qr_info, columns, rownames):
         #todo: automatically
         header_height = 200
         row_header_width = 300
@@ -319,7 +335,7 @@ class MultientryPaperForm:
             rows_lower = i*max_nrows
             rows_upper = min(i*max_nrows+max_nrows,len(rownames))
             page = MultientryPaperFormPage(qr_info,columns,rownames[rows_lower:rows_upper], \
-                                           header_height, row_header_width, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+                                           header_height, row_header_width, [title, ev_name, ev_id])
             page.save_template(os.path.join(self.wd, "template%d.xtmpl" % i) )
             page.save_as_image(os.path.join(self.wd, fileprefix + "_img%d.png" % i))
             

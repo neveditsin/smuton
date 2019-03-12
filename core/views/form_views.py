@@ -110,7 +110,7 @@ class PaperFormView(FormView):
             
             for ev in evaluators:
                 qr_info = str(ev.pk)
-                MultientryPaperForm(wdir,ev.name, str(ev.pk), qr_info, columns, teams)
+                MultientryPaperForm(wdir, self.jr.hackathon.name, ev.name, str(ev.pk), str(ev.pk), qr_info, columns, teams)
             
             pdf_path = os.path.join(wdir, "form%d.pdf" % self.jr.pk)    
             MultientryPaperForm.make_pdf(wdir, pdf_path)
