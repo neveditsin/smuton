@@ -1,10 +1,11 @@
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from ..models import Team, Hackathon
-from ..forms import TeamForm
+from ..forms import TeamForm, UploadFileForm
 from django.urls import reverse
 from django.http import Http404
-
+from django.http import HttpResponseRedirect
+from ..utils import csvutils
 
 class TeamListView(ListView):
     model = Team
@@ -25,6 +26,15 @@ class TeamListView(ListView):
     def get(self, request, *args, **kwargs):
         self.hid = request.GET.get('hack_id', '0')
         return super(TeamListView, self).get(request, *args, **kwargs)
+    
+    def post(self, request, *args, **kwargs):       
+        self.hid = request.GET.get('hack_id', '0') 
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            request.FILES['file']
+            csvutils.import_csv_teams(request.FILES['file'], self.hid, True)
+            
+        return HttpResponseRedirect(self.get_success_url())
 
     def get_queryset(self):
         if int(self.hid) > 0:
@@ -40,6 +50,7 @@ class TeamListView(ListView):
     def get_context_data(self, *args, **kwargs):
         ret = super(TeamListView, self).get_context_data(*args, **kwargs)
         ret['hackathon'] = Hackathon.objects.get(pk=self.hid)
+        ret['file_form'] = UploadFileForm()
         return ret
 
     def get_paginate_by(self, queryset):
@@ -61,7 +72,8 @@ class TeamListView(ListView):
         return super(TeamListView, self).get_template_names()
 
 
-
+    def get_success_url(self):
+        return reverse("core:team_list") + "?hack_id=" + self.hid
 
 class TeamCreateView(CreateView):
     model = Team

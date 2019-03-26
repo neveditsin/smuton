@@ -6,7 +6,7 @@
 
 {% block content %}
     <h1>Team list: Hackathon "<a href={% url "core:hackathon_list" %}>{{ hackathon }}"</a></h1>
-    <h2><a href={% url "core:team_create" hackathon.pk %}>Create a new Team</h2>
+    <h2><a href={% url "core:team_create" hackathon.pk %}>Create a new Team</a></h2>
     <ul>
     {% for team in team_list %}
         <li><a>{{ team }}</a> 
@@ -15,10 +15,16 @@
         | 
         <form style="display:inline;" action={% url "core:team_delete" team.pk %}?hack_id={{ hackathon.pk }} method="post" onsubmit="return confirm('Are you sure you want to delete {{ team }}?')">{% csrf_token %}
     <input type="submit" value="Delete" />
-    </form></li>
+    </form></li>    
     {% empty %}
         <li>No Teams yet.</li>
     {% endfor %}
-    </ul>
+	</ul>
+    
+    <form action={% url "core:team_list" %}?hack_id={{ hackathon.pk }} method="post" enctype="multipart/form-data">{% csrf_token %} 
+    <p>Load from CSV:</p>
+    	{{file_form.as_p}}
+    <input type="submit" value="Upload" />
+	</form>
 {% endblock %}
 

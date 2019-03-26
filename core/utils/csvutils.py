@@ -1,6 +1,7 @@
 from core import models
 from core.utils.multiteams import MultientryPaperFormPage
 import pandas as pd
+from warnings import catch_warnings
 
 
 def fs_csv_parse(path, jround):
@@ -55,20 +56,43 @@ def import_csv_simple(file, j_round, override):
 
 def import_csv_evaluators(file, hack_id, override):
     #round,jid,tid,crit,mark
-    df = pd.read_csv(file)   
-    for _, row in df.iterrows():
-        hack = models.Hackathon.objects.get(id=hack_id)
+    df = pd.read_csv(file, header=None)   
+    hack = models.Hackathon.objects.get(id=hack_id)
+    for _, row in df.iterrows():        
         ev_name = row[0]
-        if override == True:                
+        if override == False:                
             models.Judge.objects.create(
                 name=ev_name,
                 hackathon=hack
                 )
         else:
-            models.JudgeResponse.objects.update_or_create(
+            models.Judge.objects.update_or_create(
                 name=ev_name,
                 hackathon=hack
                 )   
+
+def import_csv_teams(file, hack_id, override):
+    #round,jid,tid,crit,mark
+    df = pd.read_csv(file, header=None)   
+    hack = models.Hackathon.objects.get(id=hack_id)
+    for _, row in df.iterrows():
+        team_name = row[0]
+        team_members = ""
+        if(len(row) > 1):
+            team_members = row[1]
+        if override == False:                
+            models.Team.objects.create(
+                name=team_name,
+                participants=team_members,
+                hackathon=hack
+                )
+        else:
+            models.Team.objects.update_or_create(
+                name=team_name,
+                participants=team_members,
+                hackathon=hack
+                )   
+
     
 def load_into_model(j_round, override_flag, dataset):
     print(j_round)
