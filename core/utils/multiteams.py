@@ -103,17 +103,20 @@ class Field:
     def square(self, sz, x, y):
         wdth = 3
         self.draw.rectangle(((x, y), (x+sz, y+sz)), outline=0, fill=1, width=wdth)
-        return(x+sz/2, y+sz/2)
+        return(x+(sz/2), y+(sz/2))
     
     def circle(self, sz, x, y):
         wdth = 3
         self.draw.ellipse((x, y, x+sz, y+sz), fill=1, outline = 0, width=wdth)
         return(x+(sz/2), y+(sz/2))
         
-    def do_draw(self, label, x, y):
+    def do_draw(self, label, x, y, isSquare):
         if (self.label_pos == 'L'):
             self.draw.text((x, y), label, font=self.font, fill=0)
-            coords = self.circle(self.field_size, math.ceil(x+self.bw), y)
+            if isSquare:
+                coords = self.square(self.field_size, math.ceil(x+self.bw), y)
+            else:
+                coords = self.circle(self.field_size, math.ceil(x+self.bw), y)
             return coords
     
     def get_size(self):
@@ -175,7 +178,7 @@ class MultientryPaperFormPage:
         #name of event
         self.draw_text_in_box(labels[0], ImageFont.truetype(font=self.FONT, size=50), \
                               (qr_coords[2]+50, qr_coords[0], 2500, 100), 0)
-        
+        ##TODO round if >1
         self.draw_text_in_box("Evaluator: " + labels[1] + " (ID: " + labels[2] + ")",\
                               ImageFont.truetype(font=self.FONT, size=35), \
                               (qr_coords[2]+50, qr_coords[0]+100, 2500, 100), 0) 
@@ -305,9 +308,9 @@ class MultientryPaperFormPage:
             offset = ((rc[1] if vertical else cc[1])-((dist+obj_sz)*nent - dist))/2
             for i in range(0, nent):
                 if (vertical):
-                    coords.append((entries_list[entry_idx], f.do_draw(entries_list[entry_idx], cc[0]+margin+block, rc[0]+offset+(dist+obj_sz)*i)))
+                    coords.append((entries_list[entry_idx], f.do_draw(entries_list[entry_idx], cc[0]+margin+block, rc[0]+offset+(dist+obj_sz)*i, True)))
                 else:
-                    coords.append((entries_list[entry_idx], f.do_draw(entries_list[entry_idx], cc[0]+offset+(dist+obj_sz)*i, rc[0]+margin+block)))
+                    coords.append((entries_list[entry_idx], f.do_draw(entries_list[entry_idx], cc[0]+offset+(dist+obj_sz)*i, rc[0]+margin+block, True)))
                 entry_idx+=1
         
             block+= centering
@@ -322,20 +325,20 @@ class MultientryPaperForm:
         #todo: automatically
         header_height = 200
         row_header_width = 300
-        min_row_sz = 200
+        min_row_sz = 120
         self.wd = wd
 
-        
-        
         self.npages, max_nrows = Table.fit_count(header_height, MultientryPaperFormPage.T_SZ, min_row_sz, len(rownames))
         if self.npages > 1:
             raise Exception("Not implemented for multiple pages")
+            #break the page by max_nrows
+            
         
         for i in range(0,self.npages):
             rows_lower = i*max_nrows
             rows_upper = min(i*max_nrows+max_nrows,len(rownames))
             page = MultientryPaperFormPage(qr_info,columns,rownames[rows_lower:rows_upper], \
-                                           header_height, row_header_width, [title, ev_name, ev_id])
+                                           header_height, row_header_width, [title, ev_name, ev_id, i+1])
             page.save_template(os.path.join(self.wd, "template%d.xtmpl" % i) )
             page.save_as_image(os.path.join(self.wd, fileprefix + "_img%d.png" % i))
             

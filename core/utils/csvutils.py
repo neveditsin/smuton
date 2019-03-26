@@ -17,7 +17,7 @@ def fs_csv_parse(path, jround):
     
     
     criteria_team_marks = []
-    for index, row in df.iterrows():     
+    for _, row in df.iterrows():     
         if(row[0] == MultientryPaperFormPage.QR_FIELD + ".id"):
             qr_data = row[1:]
         else:
@@ -35,6 +35,8 @@ def fs_csv_parse(path, jround):
         #get judge
         r_judge = models.Judge.objects.filter(pk = jid).get()
         for ctm in criteria_team_marks:
+            if str(ctm[2][i]) == 'nan':
+                continue
             r_team = models.Team.objects.filter(name = ctm[1]).get()
             r_crit = models.Criteria.objects.filter(judging_round = jround).get(name=ctm[0])
             r_mark = models.ScaleEntry.objects.filter(scale=r_crit.scale.id).get(entry=ctm[2][i])
@@ -50,12 +52,28 @@ def import_csv_simple(file, j_round, override):
     df = unpivot(pd.read_csv(file))    
     load_into_model(j_round, override, df.iterrows())    
     return
-    
+
+def import_csv_evaluators(file, hack_id, override):
+    #round,jid,tid,crit,mark
+    df = pd.read_csv(file)   
+    for _, row in df.iterrows():
+        hack = models.Hackathon.objects.get(id=hack_id)
+        ev_name = row[0]
+        if override == True:                
+            models.Judge.objects.create(
+                name=ev_name,
+                hackathon=hack
+                )
+        else:
+            models.JudgeResponse.objects.update_or_create(
+                name=ev_name,
+                hackathon=hack
+                )   
     
 def load_into_model(j_round, override_flag, dataset):
     print(j_round)
     print(dataset)
-    for index, row in dataset:
+    for _, row in dataset:
         r_round = models.JudgingRound.objects.get(id=j_round)
         #try:
         r_judge=models.Judge.objects.get(id=int(row['judge']))    

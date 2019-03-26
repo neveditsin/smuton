@@ -16,7 +16,7 @@ template = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
             <point x="$BR_X$" y="$BR_Y$"/>
         </corner>
     </corners>
-    <fields groups="true" shape="CIRCLE" size="$SZ$">
+    <fields groups="true" shape="SQUARE" size="$SZ$">
 $GROUPS$
     </fields>
 </template>

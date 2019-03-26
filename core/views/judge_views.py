@@ -1,11 +1,11 @@
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
 from ..models import Judge, Hackathon
-from ..forms import JudgeForm
+from ..forms import JudgeForm, UploadFileForm
 from django.urls import reverse
 from django.http import Http404
-
-
+from django.http import HttpResponseRedirect
+from ..utils import csvutils
 
 class JudgeListView(ListView):
     model = Judge
@@ -34,7 +34,17 @@ class JudgeListView(ListView):
     def get_context_data(self, *args, **kwargs):
         ret = super(JudgeListView, self).get_context_data(*args, **kwargs)
         ret['hackathon'] = Hackathon.objects.get(pk=self.hid)
+        ret['file_form'] = UploadFileForm()
         return ret
+
+    def post(self, request, *args, **kwargs):       
+        self.hid = request.GET.get('hack_id', '0') 
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            request.FILES['file']
+            csvutils.import_csv_evaluators(request.FILES['file'], self.hid, True)
+            
+        return HttpResponseRedirect(self.get_success_url())
 
     def get_paginate_by(self, queryset):
         return super(JudgeListView, self).get_paginate_by(queryset)
@@ -53,7 +63,9 @@ class JudgeListView(ListView):
 
     def get_template_names(self):
         return super(JudgeListView, self).get_template_names()
-
+    
+    def get_success_url(self):
+        return reverse("core:judge_list") + "?hack_id=" + self.hid
 
 class JudgeCreateView(CreateView):
     model = Judge

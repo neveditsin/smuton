@@ -19,7 +19,6 @@ from os.path import isfile, join
 import re
 import pandas as pd
 
-
 class SumbitFormView(TemplateView):
     template_name = "core/form_create.html"
     
@@ -135,9 +134,11 @@ class PaperFormView(FormView):
         ret['jr'] = self.jr
         ret['file_form'] = UploadMultiFileForm()
         img_path = os.path.join(settings.MEDIA_ROOT, str(self.jr.pk), self.SCAN_DIR)
+        if not os.path.exists(img_path):
+            os.makedirs(img_path)
 
-        list = [f for f in os.listdir(img_path) if (isfile(join(img_path, f)) and bool(re.search('jpg', f)))]
-        ret['files_list'] = list
+        lst = [f for f in os.listdir(img_path) if (isfile(join(img_path, f)) and (bool(re.search('jpg', f))) or bool(re.search('png', f))) ]
+        ret['files_list'] = lst
         return ret
     
         
@@ -169,19 +170,18 @@ class PaperFormResultsPreview(TemplateView):
                     
         
         
-        if request.GET.get('upload', 'no') == "yes":
-            for rsp in self.jtcm:
+        if request.GET.get('upload', 'no') == "yes":            
+            for rsp in self.jtcm:           
                 JudgeResponse.objects.create(
                             round = self.jr,
                             team = rsp[1],
                             judge = rsp[0],
                             criterion = rsp[2],
                             mark = rsp[3],
-                            )
+                            )                            
             return HttpResponseRedirect(reverse("core:judging_round_detail", kwargs={'pk':self.jr.pk}))
         
 
-        
         return super(PaperFormResultsPreview, self).get(request, *args, **kwargs)
     
     
@@ -189,11 +189,15 @@ class PaperFormResultsPreview(TemplateView):
         ret = super(PaperFormResultsPreview, self).get_context_data(*args, **kwargs)
         ret['jr'] = self.jr
         
+        if not self.jtcm:
+            return ret           
+        
         df = pd.DataFrame.from_records(self.jtcm)
         df.columns = ['judge_name', 'team_name', 'criteria', 'mark']
         df['judge_name'] = df['judge_name'].astype('str') 
         df['team_name'] = df['team_name'].astype('str') 
-        df['criteria'] = df['criteria'].astype('str')
+        df['criteria'] = df['criteria'].astype('str')     
+
         df['mark'] = df['mark'].astype('str')
         
         pt = pd.DataFrame(df.pivot_table(index=['judge_name','team_name'], 

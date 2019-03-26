@@ -6,12 +6,18 @@
 
 {% block content %}
     <h1>Results Preview</h1>
+    
+    {% if jtcm %}
     <div>
-    {{jtcm|safe}}
+    	{{jtcm|safe}}
+    	<a href={% url "core:pf_results_preview" jr.pk %}?upload=yes>Upload</a>
+    	<br/>
     </div>
+	{% else %}
+		No valid marks detected
+	{% endif %}
 
-    <a href={% url "core:pf_results_preview" jr.pk %}?upload=yes>Upload</a>
-    <br/>
+    
     <a href={% url "core:paper_form" jr.pk %}>Go back</a>
 
 {% endblock %}
