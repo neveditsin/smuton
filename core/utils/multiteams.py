@@ -203,11 +203,11 @@ class MultientryPaperFormPage:
                 start_idx = 0
                 
                 for ln in range(0,nlines):              
-                    end_idx = self.fit_text(text, start_idx, approx_textlen, font, box_width)                   
+                    end_idx, carry = self.fit_text(text, start_idx, approx_textlen, font, box_width)                   
                     
                     
                     self.draw.text((box[0]+margin, box[1]+margin+ln*tsz[1]), \
-                                   text[start_idx:end_idx] + ("-" if ln < nlines-1 else ""),\
+                                   text[start_idx:end_idx] + ("-" if (ln < nlines-1 and carry) else ""),\
                                    font=font, fill=0)
                     start_idx = end_idx
             else:
@@ -227,13 +227,19 @@ class MultientryPaperFormPage:
             sz = self.draw.textsize(text[start_idx:end_idx], font=font) \
                 + self.draw.textsize("-", font=font)
        
-        while(sz[0] > box_width):       
+        while(sz[0] > box_width):    
             end_idx-=1
             sz = self.draw.textsize(text[start_idx:end_idx], font=font) \
                 + self.draw.textsize("-", font=font)
-
         
-        return end_idx
+        #carry or not?
+        carry = True
+        if len(text[start_idx:end_idx].split(" ")[-1]) < 2:
+            end_idx-= 1
+            carry = False
+        
+        
+        return (end_idx, carry)
        
 
     def get_template(self):
