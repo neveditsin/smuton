@@ -18,6 +18,7 @@ import shutil
 from os.path import isfile, join
 import re
 import pandas as pd
+import os, glob
 
 class SumbitFormView(TemplateView):
     template_name = "core/form_create.html"
@@ -106,6 +107,13 @@ class PaperFormView(FormView):
                 os.makedirs(wdir)
                 
             evaluators = Judge.objects.filter(hackathon=self.jr.hackathon).all()
+            
+      
+            #cleanup first    
+            current_files = os.path.join(wdir, "*.png")
+            r = glob.glob(current_files)
+            for i in r:
+                os.remove(i)
             
             for ev in evaluators:
                 qr_info = str(ev.pk)

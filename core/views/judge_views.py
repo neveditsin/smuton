@@ -10,11 +10,8 @@ from ..utils import csvutils
 class JudgeListView(ListView):
     model = Judge
     template_name = "core/judge_list.html"
-    paginate_by = 20
     context_object_name = "judge_list"
     allow_empty = True
-    page_kwarg = 'page'
-    paginate_orphans = 0
 
     def get(self, request, *args, **kwargs):
         self.hid = request.GET.get('hack_id', '0')
@@ -46,23 +43,6 @@ class JudgeListView(ListView):
             
         return HttpResponseRedirect(self.get_success_url())
 
-    def get_paginate_by(self, queryset):
-        return super(JudgeListView, self).get_paginate_by(queryset)
-
-    def get_context_object_name(self, object_list):
-        return super(JudgeListView, self).get_context_object_name(object_list)
-
-    def paginate_queryset(self, queryset, page_size):
-        return super(JudgeListView, self).paginate_queryset(queryset, page_size)
-
-    def get_paginator(self, queryset, per_page, orphans=0, allow_empty_first_page=True):
-        return super(JudgeListView, self).get_paginator(queryset, per_page, orphans=0, allow_empty_first_page=True)
-
-    def render_to_response(self, context, **response_kwargs):
-        return super(JudgeListView, self).render_to_response(context, **response_kwargs)
-
-    def get_template_names(self):
-        return super(JudgeListView, self).get_template_names()
     
     def get_success_url(self):
         return reverse("core:judge_list") + "?hack_id=" + self.hid

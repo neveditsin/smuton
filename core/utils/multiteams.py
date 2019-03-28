@@ -332,7 +332,6 @@ class MultientryPaperForm:
         if self.npages > 1:
             raise Exception("Not implemented for multiple pages")
             #break the page by max_nrows
-            
         
         for i in range(0,self.npages):
             rows_lower = i*max_nrows
