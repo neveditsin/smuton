@@ -21,6 +21,11 @@
     {% endfor %}
 	</ul>
     
+    <form style="display:inline;" action={% url "core:team_delete_all" %}?hack_id={{ hackathon.pk }} method="post" onsubmit="return confirm('Are you sure you want to delete all teams?')">{% csrf_token %}
+    <input type="submit" value="Delete All" />
+    </form></li>    
+    
+    
     <form action={% url "core:team_list" %}?hack_id={{ hackathon.pk }} method="post" enctype="multipart/form-data">{% csrf_token %} 
     <p>Load from CSV:</p>
     	{{file_form.as_p}}

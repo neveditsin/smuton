@@ -1,5 +1,6 @@
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.list import ListView
+from django.views.generic import View
 from ..models import Team, Hackathon
 from ..forms import TeamForm, UploadFileForm
 from django.urls import reverse
@@ -10,18 +11,10 @@ from ..utils import csvutils
 class TeamListView(ListView):
     model = Team
     template_name = "core/team_list.html"
-    paginate_by = 20
     context_object_name = "team_list"
     allow_empty = True
-    page_kwarg = 'page'
-    paginate_orphans = 0
     hid = 0
     
-    def __init__(self, **kwargs):
-        return super(TeamListView, self).__init__(**kwargs)
-
-    def dispatch(self, *args, **kwargs):
-        return super(TeamListView, self).dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         self.hid = request.GET.get('hack_id', '0')
@@ -52,18 +45,6 @@ class TeamListView(ListView):
         ret['hackathon'] = Hackathon.objects.get(pk=self.hid)
         ret['file_form'] = UploadFileForm()
         return ret
-
-    def get_paginate_by(self, queryset):
-        return super(TeamListView, self).get_paginate_by(queryset)
-
-    def get_context_object_name(self, object_list):
-        return super(TeamListView, self).get_context_object_name(object_list)
-
-    def paginate_queryset(self, queryset, page_size):
-        return super(TeamListView, self).paginate_queryset(queryset, page_size)
-
-    def get_paginator(self, queryset, per_page, orphans=0, allow_empty_first_page=True):
-        return super(TeamListView, self).get_paginator(queryset, per_page, orphans=0, allow_empty_first_page=True)
 
     def render_to_response(self, context, **response_kwargs):
         return super(TeamListView, self).render_to_response(context, **response_kwargs)
@@ -157,6 +138,7 @@ class TeamDeleteView(DeleteView):
         return super(TeamDeleteView, self).post(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
+        #return reverse("core:team_list")  +  "?hack_id=" + self.hid
         return super(TeamDeleteView, self).delete(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -165,3 +147,20 @@ class TeamDeleteView(DeleteView):
 
     def get_success_url(self):
         return reverse("core:team_list")  +  "?hack_id=" + self.hid
+
+
+class TeamDeleteAllView(View):
+    def get(self, request, *args, **kwargs):
+        raise Http404
+
+    def post(self, request, *args, **kwargs): 
+        print(request.GET)        
+        self.hid = request.GET.get('hack_id', '0')
+        
+        Team.objects.filter(hackathon = Hackathon.objects.get(pk=self.hid)).delete()
+        
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        return reverse("core:team_list")  +  "?hack_id=" + self.hid
+
