@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.http import Http404
 from django.http import HttpResponseRedirect
 from ..utils import csvutils
+from django.views.generic import View
 
 class JudgeListView(ListView):
     model = Judge
@@ -149,3 +150,16 @@ class JudgeDeleteView(DeleteView):
 
     def get_success_url(self):
         return reverse("core:judge_list") + "?hack_id=" + self.hid
+    
+
+class JudgeDeleteAllView(View):
+    def get(self, request, *args, **kwargs):
+        raise Http404
+
+    def post(self, request, *args, **kwargs): 
+        self.hid = request.GET.get('hack_id', '0')        
+        Judge.objects.filter(hackathon = Hackathon.objects.get(pk=self.hid)).delete()        
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        return reverse("core:judge_list")  +  "?hack_id=" + self.hid

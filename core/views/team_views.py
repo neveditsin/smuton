@@ -154,11 +154,8 @@ class TeamDeleteAllView(View):
         raise Http404
 
     def post(self, request, *args, **kwargs): 
-        print(request.GET)        
-        self.hid = request.GET.get('hack_id', '0')
-        
-        Team.objects.filter(hackathon = Hackathon.objects.get(pk=self.hid)).delete()
-        
+        self.hid = request.GET.get('hack_id', '0')        
+        Team.objects.filter(hackathon = Hackathon.objects.get(pk=self.hid)).delete()        
         return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):

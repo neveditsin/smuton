@@ -5,7 +5,7 @@ from PIL import ImageDraw
 import qrcode
 import math 
 from fpdf import FPDF 
-
+import re
 ##testing only
 import sys
 
@@ -234,9 +234,14 @@ class MultientryPaperFormPage:
         
         #carry or not?
         carry = True
-        if len(text[start_idx:end_idx].split(" ")[-1]) < 2:
+        last = text[start_idx:end_idx].split(" ")[-1]
+        if len(last) < 2:
             end_idx-= 1
             carry = False
+            
+        if len(last) == 2 and not re.match("A-Za-z", last[0]):
+            end_idx-= 2
+            carry = False 
         
         
         return (end_idx, carry)

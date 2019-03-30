@@ -1,5 +1,5 @@
 from ..views import (JudgeListView, JudgeCreateView, 
-                     JudgeUpdateView, JudgeDeleteView)
+                     JudgeUpdateView, JudgeDeleteView, JudgeDeleteAllView)
 from django.contrib.auth.decorators import login_required
 from django.urls import re_path
 
@@ -15,7 +15,10 @@ urlpatterns = [
     re_path(r'^(?P<pk>\d+)/delete/$',
         login_required(JudgeDeleteView.as_view()),
         name="judge_delete"),
-
+    
+    re_path(r'^delete/$',
+        login_required(JudgeDeleteAllView.as_view()),
+        name="judge_delete_all"),
 
     re_path(r'^$',
         JudgeListView.as_view(),

@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Judges For Hackathon "<a href={% url "core:hackathon_list" %}>{{ hackathon }}</a>"</h1>
+    <h1>Evaluators For Event "<a href={% url "core:hackathon_list" %}>{{ hackathon }}</a>"</h1>
     <h2><a href={% url "core:judge_create" hackathon.pk %}>Create new Judge </a></h2>
    
    
@@ -25,6 +25,10 @@
     {% endfor %}
     </ul>
     
+    
+    <form style="display:inline;" action={% url "core:judge_delete_all" %}?hack_id={{ hackathon.pk }} method="post" onsubmit="return confirm('Are you sure you want to delete all evaluators?')">{% csrf_token %}
+    <input type="submit" value="Delete All" />
+    </form></li> 
     
     <form action={% url "core:judge_list" %}?hack_id={{ hackathon.pk }} method="post" enctype="multipart/form-data">{% csrf_token %} 
     <p>Load from CSV:</p>
