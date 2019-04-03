@@ -187,7 +187,7 @@ class MultientryPaperFormPage:
                               ImageFont.truetype(font=self.FONT, size=35), \
                               (qr_coords[2]+50, qr_coords[0]+135, 2500, 100), 0) 
                       
-        self.template = template_creator.create_template(cornrs[0], cornrs[1], cornrs[2], cornrs[3],groups,self.FIELD_SZ)
+        self.template = template_creator.create_template(cornrs[0], cornrs[1], cornrs[2], cornrs[3],groups,math.floor(self.FIELD_SZ/2))
 
 
     

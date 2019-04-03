@@ -10,6 +10,8 @@
     {% if jtcm %}
     <div>
     	{{jtcm|safe}}
+    	<a href={% url "core:pf_results_preview" jr.pk %}?csv=yes>Export as CSV</a>
+    	<br/>
     	<a href={% url "core:pf_results_preview" jr.pk %}?upload=yes>Upload</a>
     	<br/>
     </div>

@@ -18,7 +18,8 @@ import shutil
 from os.path import isfile, join
 import re
 import pandas as pd
-import os, glob
+import glob
+from multiprocessing.dummy import Pool as ThreadPool 
 
 class SumbitFormView(TemplateView):
     template_name = "core/form_create.html"
@@ -115,9 +116,20 @@ class PaperFormView(FormView):
             for i in r:
                 os.remove(i)
             
-            for ev in evaluators:
+
+            #pool = ThreadPool(8) 
+            
+            def gen_form(ev):
                 qr_info = str(ev.pk)
                 MultientryPaperForm(wdir, self.jr.hackathon.name, ev.name, str(ev.pk), str(ev.pk), qr_info, columns, teams)
+            
+            #pool.map(gen_form, evaluators)          
+                       
+            for ev in evaluators:
+                gen_form(ev)
+            
+            #pool.close() 
+            #pool.join() 
             
             pdf_path = os.path.join(wdir, "form%d.pdf" % self.jr.pk)    
             MultientryPaperForm.make_pdf(wdir, pdf_path)
@@ -165,22 +177,37 @@ class PaperFormResultsPreview(TemplateView):
         wdir = os.path.join(settings.MEDIA_ROOT, str(self.jr.pk))
         img_path = os.path.join(settings.MEDIA_ROOT, str(self.jr.pk), PaperFormView.SCAN_DIR)        
         
+        
         #remove old results files
         for f in os.listdir(img_path):
             if re.search("results_.*.csv", f):
                 os.remove(os.path.join(img_path, f))
         
+
         if (check_call(["java", "-jar", settings.FS_PATH, os.path.join(wdir, "template0.xtmpl"), img_path]) == 0):
             for f in os.listdir(img_path):
                 if re.search("results_.*.csv", f):
                     res_path = join(img_path, f)
-                    self.jtcm = csvutils.fs_csv_parse(res_path, self.jr)
+                    self.jtcm = csvutils.fs_csv_parse(res_path, self.jr)            
+        
+        if request.GET.get('csv', 'no') == "yes": 
+            #assume that results.csv file with parsed responses is already here
+            df = self.get_context_data()['pt']
                     
+            csv_path = os.path.join(settings.MEDIA_ROOT, str(self.jr.pk),\
+                                    "results_csv_" + str(self.jr.pk) + ".csv"  )
+            
+            df.to_csv(path_or_buf=csv_path, index=False)
+            if os.path.exists(csv_path):
+                with open(csv_path, 'rb') as fh:
+                    response = HttpResponse(fh.read(), content_type="application/vnd.ms-excel")
+                    response['Content-Disposition'] = 'inline; filename=' + os.path.basename(csv_path)
+                    return response
         
         
         if request.GET.get('upload', 'no') == "yes":            
             for rsp in self.jtcm:           
-                JudgeResponse.objects.create(
+                JudgeResponse.objects.update_or_create(
                             round = self.jr,
                             team = rsp[1],
                             judge = rsp[0],
@@ -189,6 +216,7 @@ class PaperFormResultsPreview(TemplateView):
                             )                            
             return HttpResponseRedirect(reverse("core:judging_round_detail", kwargs={'pk':self.jr.pk}))
         
+
 
         return super(PaperFormResultsPreview, self).get(request, *args, **kwargs)
     
@@ -213,6 +241,7 @@ class PaperFormResultsPreview(TemplateView):
                                  values='mark', 
                                  aggfunc='first').to_records())
 
+        ret['pt'] = pt;
         ret['jtcm'] = pt.to_html();
         
         
