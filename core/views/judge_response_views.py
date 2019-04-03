@@ -7,7 +7,8 @@ from django.http import HttpResponse
 from django.db import IntegrityError
 from django.contrib import messages
 import pandas as pd
-
+from django.views.generic import View
+from django.http import Http404
 
 class JudgeResponseListView(TemplateView):
     template_name = "core/judge_response_list.html"
@@ -20,18 +21,23 @@ class JudgeResponseListView(TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         ret = super(JudgeResponseListView, self).get_context_data(*args, **kwargs)
+        
+        ret['jround'] = self.jr
+        
         df = pd.DataFrame.from_records(Responses.objects.\
             filter(round_id=self.jr.pk).\
             values('judge_name', 'team_name', 'criteria', 'mark'))
         
+        if df.empty:
+            return ret        
+        
         pt = pd.DataFrame(df.pivot_table(index=['judge_name', 'team_name'], 
                                          columns='criteria', 
                                          values='mark', 
-                                         aggfunc='first').to_records())
-
-
+                                         aggfunc='first').to_records())        
+        
         ret['resps'] = pt.to_html()
-        ret['jround'] = self.jr
+       
         return ret
 
 
@@ -112,3 +118,17 @@ class JudgeResponseDeleteView(DeleteView):
 
     def get_success_url(self):
         return reverse("core:judge_response_list", kwargs={'jround_id':self.kwargs['jround_id']})
+    
+    
+class JudgeResponseDeleteAllView(View):
+    def get(self, request, *args, **kwargs):
+        raise Http404
+
+    def post(self, request, *args, **kwargs): 
+        self.hid = request.GET.get('hack_id', '0')        
+        JudgeResponse.objects.filter(round = JudgingRound.objects.get(pk=self.kwargs['jround_id'])).delete()        
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        return reverse("core:judge_response_list", kwargs={'jround_id':self.kwargs['jround_id']})  
+    

@@ -9,6 +9,11 @@
     <div>
     {{resps|safe}}
     </div>
+
+    <form style="display:inline;" action={% url "core:resp_delete_all" jround.pk %} method="post" onsubmit="return confirm('Are you sure you want to delete all responses?')">{% csrf_token %}
+    <input type="submit" value="Delete All" />
+    </form></li> 
+    <br/>
     <a href={% url "core:judging_round_detail" jround.pk %}>Go back</a>
 
 {% endblock %}
