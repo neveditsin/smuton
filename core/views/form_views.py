@@ -19,7 +19,7 @@ from os.path import isfile, join
 import re
 import pandas as pd
 import glob
-from multiprocessing.dummy import Pool as ThreadPool 
+
 
 class SumbitFormView(TemplateView):
     template_name = "core/form_create.html"
@@ -240,7 +240,15 @@ class PaperFormResultsPreview(TemplateView):
                                  columns='criteria', 
                                  values='mark', 
                                  aggfunc='first').to_records())
-
+        
+        cols = pt.columns.tolist()
+        tj_cols = cols[:2]        
+        crits = Criteria.objects.filter(judging_round=self.jr).order_by('pk')        
+        crit_cols = [c.name for c in crits]
+        
+        #rearrange columns: order criteria by criteria id
+        pt = pt[tj_cols + crit_cols]
+        
         ret['pt'] = pt;
         ret['jtcm'] = pt.to_html();
         

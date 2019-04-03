@@ -34,7 +34,16 @@ class JudgeResponseListView(TemplateView):
         pt = pd.DataFrame(df.pivot_table(index=['judge_name', 'team_name'], 
                                          columns='criteria', 
                                          values='mark', 
-                                         aggfunc='first').to_records())        
+                                         aggfunc='first').to_records())     
+        
+        cols = pt.columns.tolist()
+        tj_cols = cols[:2]        
+        crits = Criteria.objects.filter(judging_round=self.jr).order_by('pk')        
+        crit_cols = [c.name for c in crits]
+        
+        #rearrange columns: order criteria by criteria id
+        pt = pt[tj_cols + crit_cols]
+           
         
         ret['resps'] = pt.to_html()
        
