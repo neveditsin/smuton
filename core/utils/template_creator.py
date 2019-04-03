@@ -1,5 +1,7 @@
+from xml.sax.saxutils import escape
+
 template = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<template density="40" threshold="200" version="2.1">
+<template density="30" threshold="200" version="2.1">
     <crop bottom="0" left="0" right="0" top="0"/>
     <rotation angle="0.0"/>
     <corners type="ANGULAR">
@@ -62,12 +64,12 @@ def create_group(id, resps):
     for resp in resps:
         val+=resp
         val+="\n"
-    return group.replace("$ID$", id).replace("$VALS$", val)
+    return group.replace("$ID$", escape(id)).replace("$VALS$", escape(val))
 
 def create_template(tl,tr,bl,br,groups, field_sz):
     grps = ""
     for g in groups:
-        grps+=g
+        grps+=escape(g)
         grps+="\n"
     return template.replace("$GROUPS$", grps).\
             replace("$TR_X$", str(tr[0])).\
