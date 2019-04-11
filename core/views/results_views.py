@@ -26,7 +26,7 @@ class RoundResultsView(TemplateView):
 
     def get_context_data(self, *args, **kwargs):        
         ret = super(RoundResultsView, self).get_context_data(*args, **kwargs)
-        result = Agg.aggregate(Responses, self.jr.hackathon.pk, self.jr.number, 'sum')        
+        result = Agg.aggregate(Responses, self.jr.hackathon.pk, self.jr.number, 'mean')        
         ret['jround'] = self.jr 
         result['team_id'] = result['team_id'].apply(lambda tid: Team.objects.get(pk=tid).name)
         result.insert(0, 'rank', range(1, 1 + len(result)))

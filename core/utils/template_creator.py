@@ -18,7 +18,7 @@ template = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>
             <point x="$BR_X$" y="$BR_Y$"/>
         </corner>
     </corners>
-    <fields groups="true" shape="SQUARE" size="$SZ$">
+    <fields groups="true" shape="CIRCLE" size="$SZ$">
 $GROUPS$
     </fields>
 </template>
@@ -64,12 +64,12 @@ def create_group(id, resps):
     for resp in resps:
         val+=resp
         val+="\n"
-    return group.replace("$ID$", escape(id)).replace("$VALS$", escape(val))
+    return group.replace("$ID$", escape(id)).replace("$VALS$", val)
 
 def create_template(tl,tr,bl,br,groups, field_sz):
     grps = ""
     for g in groups:
-        grps+=escape(g)
+        grps+=g
         grps+="\n"
     return template.replace("$GROUPS$", grps).\
             replace("$TR_X$", str(tr[0])).\

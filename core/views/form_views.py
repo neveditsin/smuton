@@ -24,6 +24,10 @@ import glob
 class SumbitFormView(TemplateView):
     template_name = "core/form_create.html"
     
+    #https://stackoverflow.com/questions/20078816/replace-non-ascii-characters-with-a-single-space
+    def remove_non_ascii(self, text):
+        return ''.join([i if ord(i) < 128 else ' ' for i in text])
+    
     def post(self, request, *args, **kwargs):
         p = request.POST
         i = 1 #start from name1, scale1
@@ -33,7 +37,7 @@ class SumbitFormView(TemplateView):
                 name = p['name'+str(i)]
                 scale = p['scale'+str(i)] 
                 Criteria.objects.create(
-                    name = name,
+                    name = self.remove_non_ascii(name),
                     scale = Scale.objects.get(pk=scale),
                     judging_round = jr
                     )
@@ -121,7 +125,8 @@ class PaperFormView(FormView):
             
             def gen_form(ev):
                 qr_info = str(ev.pk)
-                MultientryPaperForm(wdir, self.jr.hackathon.name, ev.name, str(ev.pk), str(ev.pk), qr_info, columns, teams)
+                MultientryPaperForm(wdir, self.jr.hackathon.name + ": " + str(self.jr),\
+                                    ev.name, str(ev.pk), str(ev.pk), qr_info, columns, teams)
             
             #pool.map(gen_form, evaluators)          
                        

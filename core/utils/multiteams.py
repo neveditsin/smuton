@@ -319,9 +319,9 @@ class MultientryPaperFormPage:
             offset = ((rc[1] if vertical else cc[1])-((dist+obj_sz)*nent - dist))/2
             for i in range(0, nent):
                 if (vertical):
-                    coords.append((entries_list[entry_idx], f.do_draw(entries_list[entry_idx], cc[0]+margin+block, rc[0]+offset+(dist+obj_sz)*i, True)))
+                    coords.append((entries_list[entry_idx], f.do_draw(entries_list[entry_idx], cc[0]+margin+block, rc[0]+offset+(dist+obj_sz)*i, False)))
                 else:
-                    coords.append((entries_list[entry_idx], f.do_draw(entries_list[entry_idx], cc[0]+offset+(dist+obj_sz)*i, rc[0]+margin+block, True)))
+                    coords.append((entries_list[entry_idx], f.do_draw(entries_list[entry_idx], cc[0]+offset+(dist+obj_sz)*i, rc[0]+margin+block, False)))
                 entry_idx+=1
         
             block+= centering
