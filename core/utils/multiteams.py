@@ -220,14 +220,14 @@ class MultientryPaperFormPage:
         sz = self.draw.textsize(text[start_idx:end_idx], font=font) \
                 + self.draw.textsize("-", font=font)
                 
-        while(sz[0] < box_width):
+        while(sz[0] <= box_width):
             end_idx+=1
             if(end_idx >= len(text)):
                 break
             sz = self.draw.textsize(text[start_idx:end_idx], font=font) \
                 + self.draw.textsize("-", font=font)
        
-        while(sz[0] > box_width):    
+        while(sz[0] - 5 > box_width):    
             end_idx-=1
             sz = self.draw.textsize(text[start_idx:end_idx], font=font) \
                 + self.draw.textsize("-", font=font)
