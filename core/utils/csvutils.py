@@ -40,7 +40,7 @@ def fs_csv_parse(path, jround):
         for ctm in criteria_team_marks:
             if str(ctm[2][i]) == 'nan':
                 continue
-            r_team = models.Team.objects.filter(name = ctm[1]).get()
+            r_team = models.Team.objects.filter(hackathon = jround.hackathon).filter(name = ctm[1]).get()
             r_crit = models.Criteria.objects.filter(judging_round = jround).get(name=ctm[0])
             r_mark = models.ScaleEntry.objects.filter(scale=r_crit.scale.id).get(entry=ctm[2][i])
             jtcm_db.append((r_judge, r_team, r_crit, r_mark))
