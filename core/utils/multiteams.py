@@ -145,9 +145,13 @@ class MultientryPaperFormPage:
         nrow = len(rownames)
         
         groups = []
-        
+          
+
+               
         cornrs = self.corners(self.CORNERS,100,10)
         self.t = Table(self.draw, 50,250,self.T_SZ,2,header_height,nrow,row_header_width,ncol)
+        
+        
         qr_coords = self.mk_qrcode(qr_info, 8, self.CORNERS*2, self.CORNERS*2) 
         qr_group = template_creator.create_qr(self.QR_FIELD, 
                                     (qr_coords[0]             , qr_coords[1]),
@@ -156,7 +160,16 @@ class MultientryPaperFormPage:
                                     (qr_coords[0]+qr_coords[2], qr_coords[1]+qr_coords[3]))
         groups.append(qr_group)
         
-
+        #https://stackoverflow.com/questions/273946/how-do-i-resize-an-image-using-pil-and-maintain-its-aspect-ratio
+        #correct incorrect image
+        corinc = Image.open("corinc.png")
+        basewidth = 400
+        wpercent = (basewidth/float(corinc.size[0]))
+        hsize = int((float(corinc.size[1])*float(wpercent)))        
+        corinc = corinc.resize((basewidth,hsize), Image.ANTIALIAS)
+        self.img.paste(corinc, box=(2500, 75))
+        
+        
         row_idx = 0
         for rc in self.t.row_coords:
             row_val = rownames[row_idx]
@@ -186,7 +199,9 @@ class MultientryPaperFormPage:
         self.draw_text_in_box("Page 1 of 1",\
                               ImageFont.truetype(font=self.FONT, size=35), \
                               (qr_coords[2]+50, qr_coords[0]+135, 2500, 100), 0) 
-                      
+        
+        
+        
         self.template = template_creator.create_template(cornrs[0], cornrs[1], cornrs[2], cornrs[3],groups,math.floor(self.FIELD_SZ/2))
 
 
