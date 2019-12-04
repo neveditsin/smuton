@@ -19,6 +19,7 @@ from os.path import isfile, join
 import re
 import pandas as pd
 import glob
+from collections import OrderedDict
 
 
 class SumbitFormView(TemplateView):
@@ -95,13 +96,13 @@ class PaperFormView(FormView):
         self.jr = JudgingRound.objects.get(pk=kwargs['jround_id']) 
         
         if request.GET.get('download', 'no') == "yes":
-            crs = Criteria.objects.filter(judging_round=self.jr).all()
-            columns = {}
+            crs = Criteria.objects.filter(judging_round=self.jr).order_by('pk').all()
+            columns = OrderedDict()
             for cr in crs:
                 scale_entries = list(ScaleEntry.objects.filter(scale=cr.scale).all().values_list('entry', flat=True))
                 columns[cr.name] = scale_entries
                 
-            teams = list(Team.objects.filter(hackathon = self.jr.hackathon).all().values_list('name', flat=True))
+            teams = list(Team.objects.filter(hackathon = self.jr.hackathon).order_by('pk').all().values_list('name', flat=True))
             
     
     

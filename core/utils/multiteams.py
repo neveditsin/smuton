@@ -372,7 +372,9 @@ class MultientryPaperForm:
     @staticmethod
     def make_pdf(wd, outpath):   
             pdf = FPDF(unit = "pt", format = [MultientryPaperFormPage.WIDTH, MultientryPaperFormPage.HEIGHT])
-            for img in glob.glob(os.path.join(wd, '*_img*.png')):
+            files = glob.glob(os.path.join(wd, '*_img*.png'))
+            files.sort()
+            for img in files:
                 #print(img)
                 pdf.add_page()
                 pdf.image(img, 0, 0)
